@@ -2,6 +2,8 @@
 
 > 一个用于人工智能比赛打榜的系统，基于 SpringBoot + Next.js。
 
+当前版本：v1.0.0
+
 ## 功能描述
 ### 1. 账号
 * 提供账号 注册 + 登录，实名由额外表单完成
@@ -28,7 +30,7 @@
 | 2 |     X 失败       | 无 | 2026-03-16 09:24 |
 | 3 |     O 判分中      | 无 | 2026-03-17 14:17 |
 
-![submissions table](submissions.png)
+![submissions table](./images/submissions.png)
 
 ### 3. 判分
 * 核心算法：根据选手提交的 .csv / .xml / .txt，和标准答案比对计算准确率
@@ -42,7 +44,7 @@
 | 2   | John   | 90   | 2026-03-16 15:17 |
 | 3   | Alice   | 88   | 2026-03-15 17:43 |
 
-![leaderboard](leaderboard.png)
+![leaderboard](./images/leaderboard.png)
 
 * A 榜单：某时段（YYYY-mm-dd hh-mm-ss ~ YYYY-mm-dd hh-mm-ss）开放，到截止时间后静止（不允许再提交）
 * B 榜单：从 A 榜单静止后开放，只有 A 榜单排名到前 n% 才允许提交到 B 榜单
@@ -53,7 +55,6 @@
 * 设置提交启闭时间 / 立即启闭提交
 * 设置正确答案
 * 查看所有提交记录
-* 
 
 ## 数据库设计
 ### 数据表及字段
@@ -78,6 +79,22 @@
 | 2  |    2    | John     |  3            |  90           | 2026-03-16 15:17 |
 
 > 注：leaderboard 表不包含任何额外信息，故可以删除，随时从 user 和 submission 表重建。leaderboard 表的刷新为定时任务，按照一定时间间隔自动根据上两张表生成。
+
+---
+
+## 配置文件
+
+使用 `config.json` 配置文件存储服务端配置。
+
+```json
+{
+  "leaderboardRefreshRate": 3600,   // 单位：s（秒）
+  "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
+  "isLeaderboardEnabled": true   // 排行榜是否开启
+}
+```
+
+---
 
 ## API 接口设计
 
@@ -308,7 +325,7 @@ GET /submission
 POST /submission
 ```
 
-参数格式：multipart/form-data
+请求体格式：multipart/form-data
 
 仅允许上传规定的 submission 文件格式。
 
@@ -332,6 +349,152 @@ POST /submission
 
 ---
 
+### 排行榜
+#### 1. 获取当前排行榜
+
+```
+GET /leaderboard
+```
+
+允许携带参数：`/leaderboard?page=1&pageSize=10`
+
+排行榜分页查询，按照分数由高到低排列。
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": [
+        {"rank": 1, "username": "Milk", "score": 91, "submissionTime": "2026-03-17 14:17"},
+        {"rank": 2, "username": "John", "score": 90, "submissionTime": "2026-03-16 15:17"}
+      ],
+      "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+---
+
 ### 管理接口
 > 以下接口均只允许管理员访问，需携带管理员用户的 token 访问。
 
+#### 1. 获取所有提交记录
+
+```
+GET /admin/submission
+```
+
+允许携带参数：`/admin/submission?page=1&pageSize=10`
+
+所有提交记录分页查询，按照提交时间倒序排列。
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": [
+        {"id": 3, "username": "John", "status": 1, "score": 81, "submissionTime": "2026-03-17 14:17"},
+        {"id": 2, "username": "Alice", "status": 0, "score": null, "submissionTime": "2026-03-16 09:24"},
+        {"id": 1, "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30"}
+      ],
+      "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+    
+---
+
+#### 2. 获取当前配置
+
+```
+GET /admin/config
+```
+
+获取当前系统配置信息。
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": {
+        "leaderboardRefreshRate": 3600,   // 单位：s（秒）
+        "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
+        "isLeaderboardEnabled": true   // 排行榜是否开启
+      },
+      "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+---
+
+#### 3. 修改当前配置
+
+```
+PUT /admin/config
+```
+
+请求体格式：application/json
+
+请求体：
+
+```json
+{
+  "leaderboardRefreshRate": 3600,   // 单位：s（秒）
+  "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
+  "isLeaderboardEnabled": true   // 排行榜是否开启
+}
+```
+
+> 可以仅传递需要修改的字段，留空的配置将不会修改。
+
+---
+
+#### 4. 上传正确答案
+
+```
+POST /admin/answer
+```
+
+请求体格式：multipart/form-data
+
+仅允许上传规定的 submission 文件格式，先前的答案不会被覆盖。
+
+**响应：**
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": null,
+      "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "文件不符合要求，请重新提交。"
+    }
+    ```
