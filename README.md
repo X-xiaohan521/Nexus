@@ -96,6 +96,17 @@
 
 ---
 
+## 页面路由设计
+
+```text
+root/
+├── leaderboard
+├── submit
+└── admin
+```
+
+---
+
 ## API 接口设计
 
 AiRankingSystem 在 `/api` 路径下提供 REST API。除登录/注册外，所有端点都需要 JWT 认证。
