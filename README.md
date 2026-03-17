@@ -356,18 +356,19 @@ POST /submission
 GET /leaderboard
 ```
 
-允许携带参数：`/leaderboard?page=1&pageSize=10`
-
-排行榜分页查询，按照分数由高到低排列。
+获取排行榜数据，按照分数由高到低排列。
 
 * 成功
     ```json
     {
       "code": 1,
-      "data": [
-        {"rank": 1, "username": "Milk", "score": 91, "submissionTime": "2026-03-17 14:17"},
-        {"rank": 2, "username": "John", "score": 90, "submissionTime": "2026-03-16 15:17"}
-      ],
+      "data": {
+        "leaderboardRefreshRate": 3600,
+        "leaderboardData": [
+          {"rank": 1, "username": "Milk", "score": 91, "submissionTime": "2026-03-17 14:17"},
+          {"rank": 2, "username": "John", "score": 90, "submissionTime": "2026-03-16 15:17"}
+        ],
+      },
       "msg": ""
     }
     ```

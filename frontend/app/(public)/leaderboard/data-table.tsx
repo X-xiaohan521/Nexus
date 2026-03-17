@@ -92,10 +92,11 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
+
             <div className="flex items-center justify-end space-x-2 py-4">
                 <p className="text-sm">Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}</p>
                 <Button
-                    className="w-8 cursor-pointer"
+                    className="w-8"
                     variant="outline"
                     size="default"
                     onClick={() => table.previousPage()}
@@ -104,7 +105,7 @@ export function DataTable<TData, TValue>({
                     <ChevronLeft />
                 </Button>
                 <Button
-                    className="w-8 cursor-pointer"
+                    className="w-8"
                     variant="outline"
                     size="default"
                     onClick={() => table.nextPage()}
@@ -114,6 +115,5 @@ export function DataTable<TData, TValue>({
                 </Button>
             </div>
         </div>
-
     )
 }

@@ -60,7 +60,7 @@ export function TopBar() {
           <Navbar />
           <ThemeToggle />
           <Link href={"/login"}>
-            <Button size="default" variant="default" className="cursor-pointer transition-colors">
+            <Button size="default" variant="default">
               Sign In
             </Button>
           </Link>
