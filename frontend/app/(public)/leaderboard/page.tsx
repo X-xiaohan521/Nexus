@@ -21,14 +21,14 @@ export default function Leaderboard() {
     return (
         <div className="flex flex-col justify-center mx-auto lg:w-200 md:w-120 sm:w-64">
             <div className="flex items-center justify-between px-2">
-                <h1 className="text-xl font-bold">排行榜</h1>
+                <h1 className="flex text-xl font-bold">排行榜 <p className="text-sm px-3">Leaderboard</p></h1>
                 <Button variant="outline" size="default" className="cursor-pointer">
                     <RotateCw />
                     刷新
                 </Button>
             </div>
             
-            <div className="container mx-auto py-10">
+            <div className="container mx-auto py-5">
                 <DataTable columns={columns} data={rankCells} />
             </div>
         </div>
