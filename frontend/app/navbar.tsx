@@ -48,7 +48,7 @@ export function TopBar() {
 
   return (
     <div className="h-14 ">
-      <div className="container lg:w-250 md:w-150 sm:w-80 mx-auto flex h-full items-center justify-between">
+      <div className="container mx-auto lg:w-250 md:w-150 sm:w-80 flex h-full items-center justify-between">
         {/* Left section: Logo + Nav */}
         <div className="flex items-center space-x-6">
           {/* Logo */}
