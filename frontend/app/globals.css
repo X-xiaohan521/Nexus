@@ -50,8 +50,8 @@
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card: oklch(1.0000 0 0);
+  --card-foreground: oklch(0.3651 0.0325 287.0807);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.6104 0.0767 299.7335);
@@ -59,7 +59,7 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.3651 0.0325 287.0807);
+  --muted-foreground: oklch(44.953% 0.00005 271.152);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.6332 0.1578 22.6734);
@@ -94,7 +94,7 @@
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.6974 0.0282 300.0614);
+  --muted-foreground: oklch(74.763% 0.00008 271.152);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.6875 0.1420 21.4566);
@@ -127,3 +127,13 @@
     @apply font-sans;
   }
 }
+
+/* ::selection {
+  background: var(--primary) / 0.3;
+  color: var(--primary-foreground);
+}
+
+::-moz-selection {
+  background: var(--primary) / 0.3;
+  color: var(--primary-foreground);
+} */
