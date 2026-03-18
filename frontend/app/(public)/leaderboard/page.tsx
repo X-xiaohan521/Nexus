@@ -31,7 +31,7 @@ export default function Leaderboard() {
                 </Button>
             </div>
             
-            <div className="container mx-auto py-5">
+            <div className="container mx-auto py-4">
                 <DataTable columns={columns} data={rankCells} />
             </div>
         </div>

@@ -65,7 +65,7 @@
 | 2   | John   | $2a$10$...   | 0 |
 
 #### 2. submission 表
-| id | file_uri | status 0(Failed) / 1(Done) / 2(In progress) | score | submission_time | user_id |
+| id | file_uri | status 0(failed) / 1(success) / 2(pending) | score | submission_time | user_id |
 | --- | ------ | ------ | ---------- | ----------| --------- |
 | 1   |  /submission/4a275939-f701-4afb-b1e0-4dcab814a4ea.txt   | 1 | 91 | 2026-03-17 14:17 | 1 |
 | 2   |  /submission/5a2b833c-3113-40ce-aa22-3a8ac6ccf7bd.txt   | 0 | null | 2026-03-16 09:24 | 3 |
@@ -303,9 +303,9 @@ GET /submission
     {
       "code": 1,
       "data": [
-        {"status": 1, "score": 83, "submissionTime": "2026-03-15 22:30"},
-        {"status": 0, "score": null, "submissionTime": "2026-03-16 09:24"},
-        {"status": 2, "score": null, "submissionTime": "2026-03-17 14:17"}
+        {"id": 1, "status": 1, "score": 83, "submissionTime": "2026-03-15 22:30"},
+        {"id": 2, "status": 0, "score": null, "submissionTime": "2026-03-16 09:24"},
+        {"id": 3, "status": 2, "score": null, "submissionTime": "2026-03-17 14:17"}
       ],
       "msg": ""
     }
