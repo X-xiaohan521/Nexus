@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { RegisterCard } from "./register-form";
 
 export const metadata: Metadata = {
     title: "Register"
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
 export default function() {
     return (
         <>
-            <h1>注册界面</h1>
+            <RegisterCard />
         </>
     )
 }

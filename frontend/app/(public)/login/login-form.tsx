@@ -41,7 +41,7 @@ export function LoginCard() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">密码</Label>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" placeholder="Password" required />
             </div>
           </div>
         </form>
