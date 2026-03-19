@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { TopBar } from "./navbar";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider, useTheme } from "next-themes";
+import { UserProvider } from "@/context/user-context";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,24 +31,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`flex flex-col h-screen bg-background ${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {/* Top bar */}
-          <TopBar />
+      <UserProvider>
+        <body
+          className={`flex flex-col h-screen bg-background ${geistSans.variable} ${geistMono.variable} antialiased selection:bg-primary selection:text-primary-foreground`}
+        >
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {/* Top bar */}
+            <TopBar />
 
-          {/* main content */}
-          <main className="flex-1 flex items-center justify-center overflow-auto p-6">
-            {children}
-          </main>
+            {/* main content */}
+            <main className="flex-1 flex items-center justify-center overflow-auto p-6">
+              {children}
+            </main>
+            <Toaster />
 
-          {/* footer */}
-          <footer className="h-12 flex items-center justify-center shadow-md">
-            <p className="">Copyright © 2026 - AiLab</p>
-          </footer>
-        </ThemeProvider>
-      </body>
+            {/* footer */}
+            <footer className="h-12 flex items-center justify-center shadow-md">
+              <p className="">Copyright © 2026 - AiLab</p>
+            </footer>
+          </ThemeProvider>
+        </body>
+      </UserProvider >
     </html>
   );
 }
