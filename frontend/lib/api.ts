@@ -6,7 +6,7 @@ export type UniResponse = {
   "data": object
 }
 
-export async function apiFetch(url: string, options: RequestInit = {}): Promise<UniResponse> {
+export async function apiFetch(url: string, options: RequestInit = {}, isPublicEndpoint: boolean = false): Promise<UniResponse> {
   const token = localStorage.getItem("token");
 
   const headers: Record<string, string> = {
@@ -14,7 +14,7 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
     ...(options.headers as Record<string, string>),
   };
 
-  if (token) {
+  if (token && !isPublicEndpoint) {
     headers.Authorization = `Bearer ${token}`;
   }
   
@@ -39,11 +39,10 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
     console.log("API fetch failed, check your network.")
     return {
       "code": 0,
-      "msg": "API fetch failed, check your network.",
+      "msg": "请求失败，请检查网络。",
       "data": {}
     }
   }
-  
 }
 
 export function getUrl(uri: string) {
