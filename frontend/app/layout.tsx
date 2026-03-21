@@ -47,7 +47,7 @@ export default function RootLayout({
 
             {/* footer */}
             <footer className="h-12 flex items-center justify-center shadow-md">
-              <p className="">Copyright © 2026 - DHU AiLab</p>
+              <p className="">Copyright © 2026 - AiLab</p>
             </footer>
           </ThemeProvider>
         </body>

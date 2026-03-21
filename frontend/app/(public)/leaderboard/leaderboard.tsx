@@ -1,7 +1,6 @@
 "use client"
 
-import { Metadata } from "next";
-import { columns, RankCell, rankCells } from "./columns"
+import { columns, RankCell } from "./columns"
 import { DataTable } from "./data-table"
 import { Button } from "@/components/ui/button";
 import {RotateCw} from "lucide-react";
@@ -22,18 +21,18 @@ export const defaultRankData: RankData = {
 
 export default function Leaderboard() {
     const [data, setData] = useState<RankData>(defaultRankData)
-    const [loading, setLoding] = useState(true)
+    const [loading, setLoading] = useState(true)
 
     async function getData() {
-        setLoding(true)
-        const response = await apiFetch("/api/leaderboard", {}, true)
+        setLoading(true)
+        const response = await apiFetch("/api/leaderboard", {method: "GET"}, true)
         if (response.code === 1) {
             setData(response.data as RankData)
         } else {
             toast.error(response.msg, {position: "top-center"})
             setData(defaultRankData)
         }
-        setLoding(false)
+        setLoading(false)
     }
 
     useEffect(() => {
