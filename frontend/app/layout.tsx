@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Ai Ranking",
-    template: "%s | Ai Ranking"
+    default: "Nexus",
+    template: "%s | Nexus"
   },
   description: 'A ranking system for AI competitions.',
 }
@@ -47,7 +47,7 @@ export default function RootLayout({
 
             {/* footer */}
             <footer className="h-12 flex items-center justify-center shadow-md">
-              <p className="">Copyright © 2026 - AiLab</p>
+              <p className="">Copyright © 2026 - DHU AiLab</p>
             </footer>
           </ThemeProvider>
         </body>

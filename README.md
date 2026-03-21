@@ -1,4 +1,4 @@
-# AI 打榜比赛系统 AiNexus
+# AI 打榜比赛系统 Nexus
 
 > 一个用于人工智能比赛打榜的系统，基于 SpringBoot + Next.js。
 

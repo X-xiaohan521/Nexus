@@ -52,7 +52,7 @@ export function TopBar() {
         {/* Left section: Logo + Nav */}
         <div className="flex items-center space-x-6">
           {/* Logo */}
-          <Link href={"/"}><div className="text-xl font-bold">AiLab</div></Link>
+          <Link href={"/"}><div className="text-xl font-bold">Nexus</div></Link>
         </div>
 
         {/* Right section: Navbar + ThemeToggle + Sign In / username */}
