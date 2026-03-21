@@ -4,17 +4,16 @@ import Link from "next/link"
 
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { getUrl } from '@/lib/api'
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { useUser } from "@/context/user-context"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export function Navbar() {
   return (
@@ -38,11 +37,45 @@ export function Navbar() {
 export function TopBar() {
   const router = useRouter()
 
-  const onClickAvatar = () => {
-    if (!localStorage.getItem("token")) {
-      router.push("/login")
+  const {user, refreshUser} = useUser()
+  // const user = {
+  //   username: "Milk",
+  //   role: 0
+  // }
+
+  const onLogout = () => {
+    if (localStorage.getItem("token")) {
+      localStorage.removeItem("token")
+    }
+    refreshUser()
+  }
+
+  function getSign() {
+    if (!user) {
+      return (
+        <Link href={"/login"}>
+          <Button size="default" variant="default">
+            Sign In
+          </Button>
+        </Link>
+      )
     } else {
-      router.push("/account/profile")
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="default" variant="link">
+              {user.username}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={onLogout}>
+                退出登录
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
     }
   }
 
@@ -59,11 +92,7 @@ export function TopBar() {
         <div className="flex items-center space-x-4">
           <Navbar />
           <ThemeToggle />
-          <Link href={"/login"}>
-            <Button size="default" variant="default">
-              Sign In
-            </Button>
-          </Link>
+          {getSign()}
         </div>
       </div>
     </div>
