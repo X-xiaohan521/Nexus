@@ -20,6 +20,10 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 
+export type TokenData = {
+  token: string
+}
+
 export function LoginCard() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -81,8 +85,10 @@ export function LoginCard() {
       })
     })
 
+    const data = response.data as TokenData
+
     if (response.code === 1) {
-      localStorage.setItem("token", response.data as unknown as string)  // store token in localStorage
+      localStorage.setItem("token", data.token)  // store token in localStorage
       router.push("/")
       await refreshUser()
     } else {
