@@ -60,6 +60,13 @@ export function FileUploadCard() {
         }
     }
 
+    function clearFile() {
+        setFile(null)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+        }
+    }
+
     const handleSelect = () => {
         fileInputRef.current?.click()
     }
@@ -72,19 +79,13 @@ export function FileUploadCard() {
             if (isFileValid(selectedFile)) {
                 setFile(selectedFile)
             } else {
-                setFile(null)
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = ''
-                }
+                clearFile()
             }
         }
     }
 
     const handleCancel = () => {
-        setFile(null)
-        if (fileInputRef.current) {
-            fileInputRef.current.value = ''
-        }
+        clearFile()
         toast.info("已取消提交。", {position: "top-center"})
     }
 
@@ -96,6 +97,7 @@ export function FileUploadCard() {
             return
         } else if (!isFileValid(file)) {
             setLoading(false)
+            clearFile()
             return
         }
 
@@ -109,6 +111,7 @@ export function FileUploadCard() {
 
         if (response.code === 1) {
             toast.success("提交成功~", {position: "top-center"})
+            clearFile()
         } else {
             toast.error(response.msg, {position: "top-center"})
         }
