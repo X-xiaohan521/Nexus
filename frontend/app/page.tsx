@@ -10,7 +10,7 @@ export default function Home() {
       <Separator />
       <h2 className="">这是一个可以提交你的模型推理结果，并参与到排行榜的平台。</h2>
       <h2 className="text-center text-muted-foreground">An AI ranking system from AiLab, where you can commit your result and gain a place on the leaderboard.</h2>
-      <div className="flex pt-1 space-x-2">
+      <div className="flex pt-4 space-x-2">
         <Link href={"/submit"}><Button size="lg">提交结果</Button></Link>
         <Link href={"/leaderboard"}><Button size="lg" variant="ghost">查看排行榜</Button></Link>
       </div>
