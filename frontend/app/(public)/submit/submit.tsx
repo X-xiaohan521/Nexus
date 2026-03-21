@@ -10,8 +10,6 @@ import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 
-import ProtectedPage from "@/components/protected-page"
-
 export type SubmissionData = {
     submissions: SubmissionCell[]
 }
@@ -43,21 +41,19 @@ export default function Submit() {
     }, [])
 
     return (
-        // <ProtectedPage needAdmin={false}>
-            <div className="flex flex-col items-center mx-auto lg:w-200 md:w-120 sm:w-64">
-                <FileUploadCard />
-                <div className="flex items-center lg:w-200 md:w-120 sm:w-64 justify-between px-2 py-8 bottom-0 h-8">
-                    <h1 className="flex text-xl font-bold">提交记录</h1>
-                    <Button variant="outline" size="default" onClick={getData} disabled={loading}>
-                        <RotateCw className={loading ? "hidden" : ""} />
-                        <Spinner data-icon="inline-start" className={loading ? "" : "hidden"} />
-                        刷新
-                    </Button>
-                </div>
-                <div className="container mx-auto">
-                    <DataTable columns={columns} data={data.submissions} />
-                </div>
+        <div className="flex flex-col items-center mx-auto lg:w-200 md:w-120 sm:w-64">
+            <FileUploadCard />
+            <div className="flex items-center lg:w-200 md:w-120 sm:w-64 justify-between px-2 py-8 bottom-0 h-8">
+                <h1 className="flex text-xl font-bold">提交记录</h1>
+                <Button variant="outline" size="default" onClick={getData} disabled={loading}>
+                    <RotateCw className={loading ? "hidden" : ""} />
+                    <Spinner data-icon="inline-start" className={loading ? "" : "hidden"} />
+                    刷新
+                </Button>
             </div>
-        // </ProtectedPage>
+            <div className="container mx-auto">
+                <DataTable columns={columns} data={data.submissions} />
+            </div>
+        </div>
     )
 }
