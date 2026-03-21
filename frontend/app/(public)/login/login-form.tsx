@@ -45,7 +45,10 @@ export function LoginCard() {
     } else if (username.length < 3) {
       setUsernameMessage("用户名太短，需至少 3 个字符。");
       return false;
-    } else if (!/^[a-zA-Z0-9@._-]+$/.test(username)) {
+    } else if (username.length > 20) {
+      setUsernameMessage("用户名太长，至多 20 个字符。");
+      return false;
+    } else if (!/^[\u4e00-\u9fa5a-zA-Z0-9@._-]+$/.test(username)) {
       setUsernameMessage("用户名中包含不合法字符。");
       return false;
     } else {
@@ -60,6 +63,9 @@ export function LoginCard() {
       return false;
     } else if (password.length < 6) {
       setPasswordMessage("密码太短，需至少 6 个字符。");
+      return false;
+    } else if (password.length > 20) {
+      setPasswordMessage("密码太长，至多 20 个字符。");
       return false;
     } else if (!/^[a-zA-Z0-9@._-]+$/.test(password)) {
       setPasswordMessage("密码中包含不合法字符。");
