@@ -40,7 +40,7 @@ export default function RootLayout({
             <TopBar />
 
             {/* main content */}
-            <main className="flex-1 flex items-center justify-center overflow-auto p-6">
+            <main className="flex-1 flex items-center justify-center overflow-auto p-6 pt-14">
               {children}
             </main>
             <Toaster />

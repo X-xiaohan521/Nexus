@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function() {
     return (
-        <ProtectedPage>
+        <ProtectedPage needAdmin={false}>
             <div className="flex flex-col items-center mx-auto lg:w-200 md:w-120 sm:w-64">
                 <FileUploadCard className="lg:w-100" />
                 <div className="flex items-center lg:w-200 md:w-120 sm:w-64 justify-between px-2 py-8 bottom-0 h-8">
