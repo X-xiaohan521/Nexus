@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/card"
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item"
 import { toast } from "sonner"
+import { apiFetch } from "@/lib/api"
+import { Spinner } from "@/components/ui/spinner"
 
 export function formatFileSize(bytes: number, decimals = 2): string {
   if (bytes === 0) return "0 B";
@@ -38,6 +40,7 @@ export function formatFileSize(bytes: number, decimals = 2): string {
 export function FileUploadCard() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [file, setFile] = useState<File | null>(null)
+    const [loading, setLoading] = useState(false)
 
     function isFileValid(file: File): boolean {
         if (file.type !== "text/csv") {
@@ -85,6 +88,33 @@ export function FileUploadCard() {
         toast.info("已取消提交。", {position: "top-center"})
     }
 
+    const handleUpload = async () => {
+        setLoading(true)
+        if (!file) {
+            setLoading(false)
+            toast.error("请先选择文件。", {position: "top-center"})
+            return
+        } else if (!isFileValid(file)) {
+            setLoading(false)
+            return
+        }
+
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const response = await apiFetch("/api/submission", {
+            method: "POST",
+            body: formData
+        })
+
+        if (response.code === 1) {
+            toast.success("提交成功~", {position: "top-center"})
+        } else {
+            toast.error(response.msg, {position: "top-center"})
+        }
+        setLoading(false)
+    }
+
     if (file) {
         return (
             <div className="lg:w-100">
@@ -107,10 +137,11 @@ export function FileUploadCard() {
                         </Item>
                     </CardContent>
                     <CardFooter className="flex justify-center space-x-4">
-                        <Button variant="default" className="w-[45%]">
+                        <Button variant="default" className="w-[45%]" onClick={handleUpload} disabled={loading}>
+                            <Spinner data-icon="inline-start" className={loading ? "" : "hidden"} />
                             提交
                         </Button>
-                        <Button variant="outline" className="w-[45%]" onClick={handleCancel}>
+                        <Button variant="outline" className="w-[45%]" onClick={handleCancel} disabled={loading}>
                             取消
                         </Button>
                     </CardFooter>
