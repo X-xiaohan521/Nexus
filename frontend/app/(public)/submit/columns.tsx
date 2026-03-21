@@ -35,7 +35,7 @@ function PendingBadge() {
     return (
         <Badge variant="secondary">
             <Spinner data-icon="inline-start" />
-            判分中
+            评测中
         </Badge>
     )
 }
