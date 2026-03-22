@@ -1,0 +1,17 @@
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "6780:6780"
+    volumes:
+      - ./backend/data:/app/data
+    environment:
+      JWT_SECRET: kJUtGE1a0USnCVqY/cgefqrCkGyY+ZkO7aFP73/MzeA=
+      NEXUS_DATA: /app/data
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
