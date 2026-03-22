@@ -76,10 +76,11 @@ public class SettingsManager {
     }
 
     public void applySettingsFrom(Settings newSettings) {
-
+        this.settings = newSettings;
     }
 
     public void applyAndSaveSettingsFrom(Settings newSettings) {
-
+        this.settings = newSettings;
+        saveSettings();
     }
 }

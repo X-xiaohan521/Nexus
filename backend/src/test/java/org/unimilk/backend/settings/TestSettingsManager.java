@@ -59,4 +59,24 @@ public class TestSettingsManager {
         Settings settings = settingsManager.getSettings();
         assertEquals(new Settings(), settings);
     }
+
+    @Test
+    void testApplyingCustomSettings() {
+        Settings settings = new Settings();
+        settings.setLeaderboardEnabled(false);
+        settings.setLeaderboardRefreshRate(30);
+        settingsManager.applySettingsFrom(settings);
+        Settings newSettings = settingsManager.getSettings();
+        assertEquals(settings, newSettings);
+    }
+
+    @Test
+    void testSavingAndLoadingCustomSettings() {
+        Settings settings = new Settings();
+        settings.setLeaderboardRefreshRate(8000);
+        settings.setCorrectAnswer("another_correct_answer.csv");
+        settingsManager.applyAndSaveSettingsFrom(settings);
+        Settings newSettings = settingsManager.getSettings();
+        assertEquals(settings, newSettings);
+    }
 }
