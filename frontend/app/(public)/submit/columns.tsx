@@ -8,7 +8,7 @@ import { Spinner } from "@/components/ui/spinner"
 
 export type SubmissionCell = {
     id: number
-    status: 0 | 1 | 2
+    status: 0 | 1 | 2 | 3
     score: number | null
     submissionTime: string
 }
@@ -31,11 +31,20 @@ function SuccessBadge() {
     )
 }
 
-function PendingBadge() {
+function RunningBadge() {
     return (
         <Badge variant="secondary">
             <Spinner data-icon="inline-start" />
             评测中
+        </Badge>
+    )
+}
+
+function PendingBadge() {
+    return (
+        <Badge variant="secondary">
+            <Spinner data-icon="inline-start" />
+            排队中
         </Badge>
     )
 }
@@ -69,6 +78,8 @@ export const columns: ColumnDef<SubmissionCell>[] = [
                 case 1:
                     return <SuccessBadge />
                 case 2:
+                    return <RunningBadge />
+                case 3:
                     return <PendingBadge />
             }
         }
