@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@/context/user-context"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { toast } from "sonner"
 
 export function Navbar() {
   return (
@@ -38,16 +39,14 @@ export function TopBar() {
   const router = useRouter()
 
   const {user, refreshUser} = useUser()
-  // const user = {
-  //   username: "Milk",
-  //   role: 0
-  // }
 
   const onLogout = () => {
     if (localStorage.getItem("token")) {
       localStorage.removeItem("token")
     }
     refreshUser()
+    router.push("/")
+    toast.info("登出成功~", {position: "top-center"})
   }
 
   function getSign() {

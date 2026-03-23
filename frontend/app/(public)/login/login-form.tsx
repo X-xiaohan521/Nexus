@@ -95,6 +95,7 @@ export function LoginCard() {
 
     if (response.code === 1) {
       localStorage.setItem("token", data.token)  // store token in localStorage
+      toast.info(response.msg, { position: "top-center" });
       router.push("/")
       await refreshUser()
     } else {
