@@ -15,10 +15,10 @@
 | 4   |  /submission/ef718657-eb25-4b5b-8263-0217e83490a0.txt   | 3 | null | 2026-03-16 15:17 | 1 |
 
 ### 3. leaderboard 表
-| id | user_id | username | submission_id | highest_score | submission_time |
-| -- | ------- | -------- | ------------- | ------------- | --------------- |
-| 1  |    1    | Milk     |  1            |  91           | 2026-03-17 14:17 |
-| 2  |    2    | John     |  3            |  90           | 2026-03-16 15:17 |
+| id | rank | user_id | username | submission_id | highest_score | submission_time |
+| -- | ---- | ------- | -------- | ------------- | ------------- | --------------- |
+| 1  |  1   |    1    | Milk     |  1            |  91           | 2026-03-17 14:17 |
+| 2  |  2   |    2    | John     |  3            |  90           | 2026-03-16 15:17 |
 
 > [!NOTE]
 > 注：leaderboard 表不包含任何额外信息，故可以删除，随时从 user 和 submission 表重建。leaderboard 表的刷新为定时任务，按照一定时间间隔自动根据上两张表生成。

@@ -24,6 +24,6 @@ public class Submission {
     Integer score;
     LocalDateTime submissionTime;
 
-    @ManyToOne
+    @ManyToOne @JoinColumn(name = "user_id")
     User user;
 }

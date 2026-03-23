@@ -23,6 +23,6 @@ public class User {
     String password;
     Integer role;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     List<Submission> submissions;
 }

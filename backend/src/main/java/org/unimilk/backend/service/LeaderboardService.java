@@ -1,5 +1,6 @@
 package org.unimilk.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.unimilk.backend.settings.SettingsManager;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @Service
 public class LeaderboardService {
     private final SettingsManager settingsManager;
@@ -47,25 +49,23 @@ public class LeaderboardService {
         leaderboardRepo.deleteAll();
         List<User> users = userRepo.findAll();
         List<Leader> leaders = users.stream().map(user -> {
-                    List<Submission> submissions = user.getSubmissions();
+                    List<Submission> submissions = submissionRepo.findByUserOrderByScoreDesc(user);
                     if (submissions.isEmpty()) {
                         return null;
                     }
-                    List<Submission> sortedSubmissions = submissions.stream().sorted((s1, s2) -> {
-                        if (s1.getScore() == null && s2.getScore() == null) {
-                            return 0;
-                        } else if (s1.getScore() == null) {
-                            return -1;
-                        } else if (s2.getScore() == null) {
-                            return 1;
-                        } else {
-                            return s2.getScore().compareTo(s1.getScore());
-                        }
-                    }).toList();
-                    Submission highestSubmission = sortedSubmissions.getFirst();
-                    return new Leader(null, null, user.getUsername(), highestSubmission.getScore(), highestSubmission.getSubmissionTime(), user, highestSubmission);
+                    Submission highestSubmission = submissions.getFirst();
+                    return new Leader(null, null, user.getUsername(), highestSubmission.getScore(), highestSubmission.getSubmissionTime(), user.getId(), highestSubmission.getId());
                 }).filter(leader -> leader != null && leader.getHighestScore() != null)
                 .sorted((leader1, leader2) -> leader2.getHighestScore().compareTo(leader1.getHighestScore()))
                 .toList();
+        int rank = 1;
+        leaders.getFirst().setRank(rank);
+        for (int i = 1; i < leaders.size(); i++) {
+            if (!leaders.get(i).getHighestScore().equals(leaders.get(i - 1).getHighestScore())) {
+                rank = i + 1;
+            }
+            leaders.get(i).setRank(rank);
+        }
+        leaderboardRepo.saveAll(leaders);
     }
 }

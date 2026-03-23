@@ -25,9 +25,6 @@ public class Leader {
     Integer highestScore;
     LocalDateTime submissionTime;
 
-    @OneToOne
-    User user;
-
-    @OneToOne
-    Submission submission;
+    Integer userId;
+    Integer submissionId;
 }
