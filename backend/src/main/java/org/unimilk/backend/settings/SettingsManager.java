@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.unimilk.backend.exception.BusinessException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -27,7 +26,7 @@ public class SettingsManager {
     @Value("${app.data.directory}")
     private String dataDir;
 
-    private Gson gson;
+    private final Gson gson;
 
     @Autowired
     public SettingsManager(Gson gson) {
@@ -35,7 +34,7 @@ public class SettingsManager {
     }
 
     @PostConstruct
-    private void loadSettings() {
+    private synchronized void loadSettings() {
         StringBuilder sb = new StringBuilder();
         String jsonStr;
         try (BufferedReader reader = Files.newBufferedReader(Path.of(dataDir, "config.json"))) {
@@ -62,7 +61,7 @@ public class SettingsManager {
     }
 
     @PreDestroy
-    private void saveSettings() {
+    private synchronized void saveSettings() {
         try (BufferedWriter writer = Files.newBufferedWriter(Path.of(dataDir, "config.json"))) {
             String jsonStr = gson.toJson(this.settings);
             writer.write(jsonStr);
@@ -71,15 +70,15 @@ public class SettingsManager {
         }
     }
 
-    public void refreshSettings() {
+    public synchronized void refreshSettings() {
         loadSettings();
     }
 
-    public void applySettingsFrom(Settings newSettings) {
+    public synchronized void applySettingsFrom(Settings newSettings) {
         this.settings = newSettings;
     }
 
-    public void applyAndSaveSettingsFrom(Settings newSettings) {
+    public synchronized void applyAndSaveSettingsFrom(Settings newSettings) {
         this.settings = newSettings;
         saveSettings();
     }
