@@ -6,7 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-import org.unimilk.backend.dto.TokenUser;
+import org.unimilk.backend.dto.TokenBearer;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -32,14 +32,14 @@ public class JwtUtils {
                 .compact();
     }
 
-    public TokenUser extractUsername(String token) {
+    public TokenBearer extractTokenBearer(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(SECRET_KEY)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
 
-        return new TokenUser(Integer.parseInt(claims.getId()), claims.getSubject());
+        return new TokenBearer(Integer.parseInt(claims.getId()), claims.getSubject());
     }
 
     /**

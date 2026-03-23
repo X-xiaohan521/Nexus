@@ -1,8 +1,12 @@
 package org.unimilk.backend.service;
 
+import jakarta.annotation.Nullable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.unimilk.backend.dto.TokenDto;
+import org.unimilk.backend.dto.TokenBearer;
+import org.unimilk.backend.dto.UserDto;
 import org.unimilk.backend.entity.User;
 import org.unimilk.backend.exception.BusinessException;
 import org.unimilk.backend.repo.UserRepo;
@@ -10,6 +14,7 @@ import org.unimilk.backend.util.JwtUtils;
 
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 public class AuthService {
     private final UserRepo userRepo;
@@ -48,15 +53,32 @@ public class AuthService {
 
         // 3. check password
         if (!password.equals(user.getPassword())) {
-            throw new BusinessException("密码错误，请重新输入。", "User " + username + " login failed: password incorrect.");
+            throw new BusinessException("密码错误，请重新输入。", "User " + user.getUsername() + " login failed: password incorrect.");
         }
 
         // 4. generate token
         try {
+            log.info("User {} login success.", user.getUsername());
             String token = jwtUtils.generateToken(user.getId(), user.getUsername());
             return new TokenDto(token);
         } catch (Exception e) {
             throw new BusinessException("服务器内部错误，请联系管理员。", "User " + username + " login failed: unable to generate token.", e);
+        }
+    }
+
+    /**
+     * Verify a token.
+     * @param token the token to be verified
+     * @return the UserDto of the token bearer if the token is valid, otherwise null
+     */
+    @Nullable
+    public UserDto verifyToken(String token) {
+        try {
+            TokenBearer bearer = jwtUtils.extractTokenBearer(token);
+            User user = userRepo.findById(bearer.id()).orElseThrow();
+            return new UserDto(user.getId(), user.getUsername(), user.getRole());
+        } catch (Exception e) {
+            return null;
         }
     }
 }
