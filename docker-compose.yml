@@ -7,7 +7,7 @@ services:
     volumes:
       - ./backend/data:/app/data
     environment:
-      JWT_SECRET: kJUtGE1a0USnCVqY/cgefqrCkGyY+ZkO7aFP73/MzeA=
+      JWT_SECRET: DKlaUOkMiiXfcuLE/Dip5bTqdsW4KBptpc1HEA8c4zg=
       NEXUS_DATA: /app/data
   frontend:
     build: ./frontend
