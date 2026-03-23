@@ -14,8 +14,8 @@ import org.unimilk.backend.repo.SubmissionRepo;
 import org.unimilk.backend.repo.UserRepo;
 import org.unimilk.backend.settings.SettingsManager;
 
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -35,10 +35,9 @@ public class LeaderboardService {
 
     public LeaderboardDto getLeaderboard() {
         List<Leader> leaderboard = leaderboardRepo.findAll();
-        AtomicInteger rank = new AtomicInteger(1);
         List<LeaderDto> leaderboardData = leaderboard.stream()
-                .sorted((leader1, leader2) -> leader2.getHighestScore().compareTo(leader1.getHighestScore()))
-                .map((leader -> new LeaderDto(rank.getAndIncrement(), leader.getUsername(), leader.getHighestScore(), leader.getSubmissionTime())))
+                .sorted(Comparator.comparing(Leader::getRank))
+                .map(leader -> new LeaderDto(leader.getRank(), leader.getUsername(), leader.getHighestScore(), leader.getSubmissionTime()))
                 .toList();
         Integer leaderboardRefreshRate = settingsManager.getSettings().getLeaderboardRefreshRate();
         return new LeaderboardDto(leaderboardRefreshRate, leaderboardData);
