@@ -52,8 +52,8 @@ export function FileUploadCard() {
         } else if (file.name.length > 50) {
             toast.error("文件名长度不得超过 50 个字符。", {position: "top-center"})
             return false
-        } else if (!/^[ \u4e00-\u9fa5a-zA-Z._-]+$/.test(file.name)) {
-            toast.error("文件名只允许包含：中文/英文字符、小数点、下划线、横线。", {position: "top-center"})
+        } else if (!/^[ \u4e00-\u9fa5a-zA-Z0-9._-]+$/.test(file.name)) {
+            toast.error("文件名只允许包含：中文/英文字符、数字、小数点、下划线、横线。", {position: "top-center"})
             return false
         } else {
             return true
