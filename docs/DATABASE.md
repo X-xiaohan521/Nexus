@@ -9,10 +9,10 @@
 ### 2. submission 表
 | id | file_uri | status 0(failed) / 1(success) / 2(pending) / 3(running) | score | submission_time | user_id |
 | --- | ------ | ------ | ---------- | ----------| --------- |
-| 1   |  /submission/4a275939-f701-4afb-b1e0-4dcab814a4ea.txt   | 1 | 91 | 2026-03-17 14:17 | 1 |
-| 2   |  /submission/5a2b833c-3113-40ce-aa22-3a8ac6ccf7bd.txt   | 0 | null | 2026-03-16 09:24 | 3 |
-| 3   |  /submission/ef718657-eb25-4b5b-8263-0217e83490a0.txt   | 1 | 90 | 2026-03-16 15:17 | 2 |
-| 4   |  /submission/ef718657-eb25-4b5b-8263-0217e83490a0.txt   | 3 | null | 2026-03-16 15:17 | 1 |
+| 1   |  /submission/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv   | 1 | 91 | 2026-03-17 14:17 | 1 |
+| 2   |  /submission/5a2b833c-3113-40ce-aa22-3a8ac6ccf7bd.csv   | 0 | null | 2026-03-16 09:24 | 3 |
+| 3   |  /submission/ef718657-eb25-4b5b-8263-0217e83490a0.csv   | 1 | 90 | 2026-03-16 15:17 | 2 |
+| 4   |  /submission/ef718657-eb25-4b5b-8263-0217e83490a0.csv   | 3 | null | 2026-03-16 15:17 | 1 |
 
 ### 3. leaderboard 表
 | id | rank | user_id | username | submission_id | highest_score | submission_time |
