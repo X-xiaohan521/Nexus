@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface SubmissionRepo extends JpaRepository<Submission, Integer> {
     List<Submission> findByUserOrderByScoreDesc(User user);
+    List<Submission> findByUserIdOrderBySubmissionTimeDesc(Integer userId);
 }
