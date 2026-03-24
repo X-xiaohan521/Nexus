@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { ArrowUpDown, CircleCheck, CircleX } from "lucide-react"
+import { ArrowUpDown, CircleCheck, CircleX, Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Spinner } from "@/components/ui/spinner"
 
@@ -33,7 +33,7 @@ function SuccessBadge() {
 
 function RunningBadge() {
     return (
-        <Badge variant="secondary">
+        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
             <Spinner data-icon="inline-start" />
             评测中
         </Badge>
@@ -43,7 +43,7 @@ function RunningBadge() {
 function PendingBadge() {
     return (
         <Badge variant="secondary">
-            <Spinner data-icon="inline-start" />
+            <Clock data-icon="inline-start" />
             排队中
         </Badge>
     )
