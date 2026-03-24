@@ -1,4 +1,7 @@
-const BASE_URL = "http://localhost:6780";
+import { useUser } from "@/context/user-context";
+import { useRouter } from "next/navigation";
+
+const PROXY_URL = "/api/proxy";
 
 export type UniResponse = {
   "code": number,
@@ -19,20 +22,29 @@ export async function apiFetch(url: string, options: RequestInit = {}, isPublicE
   }
   
   try {
-    const response = await fetch(`${BASE_URL}${url}`, {
+    const response = await fetch(`${PROXY_URL}${url}`, {
       ...options,
       headers,
     });
-    console.log("Got response from backend: ", response)
-
+    console.log("Get response: ", response)
     if (response.status === 401) {
       console.log("Token outdated, removing.")
       localStorage.removeItem("token");
       window.location.href = "/login";
+      return {
+        "code": 0,
+        "msg": "令牌已失效，请重新登录。",
+        "data": {}
+      }
     }
     if (response.status === 403) {
       console.log("No permission, redirect to home.")
       window.location.href = "/";
+      return {
+        "code": 0,
+        "msg": "你没有权限访问该页面。",
+        "data": {}
+      }
     }
     return response.json();
   } catch {
@@ -46,5 +58,5 @@ export async function apiFetch(url: string, options: RequestInit = {}, isPublicE
 }
 
 export function getUrl(uri: string) {
-    return BASE_URL + uri
+    return PROXY_URL + uri
 }
