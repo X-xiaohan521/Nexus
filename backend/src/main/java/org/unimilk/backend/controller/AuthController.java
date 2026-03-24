@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.unimilk.backend.dto.TokenDto;
-import org.unimilk.backend.request.LoginRequest;
+import org.unimilk.backend.request.AuthRequest;
 import org.unimilk.backend.response.UniResponse;
 import org.unimilk.backend.service.AuthService;
 
@@ -21,8 +21,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public UniResponse onLogin(@RequestBody LoginRequest req) {
+    public UniResponse onLogin(@RequestBody AuthRequest req) {
         TokenDto tokenDto = authService.handleLogin(req.username(), req.password());
         return UniResponse.success(tokenDto, "登录成功~");
+    }
+
+    @PostMapping("/register")
+    public UniResponse onRegister(@RequestBody AuthRequest req) {
+        TokenDto tokenDto = authService.handleRegister(req.username(), req.password());
+        return UniResponse.success(tokenDto, "注册成功~");
     }
 }

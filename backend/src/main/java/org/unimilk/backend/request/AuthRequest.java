@@ -1,6 +1,6 @@
 package org.unimilk.backend.request;
 
-public record LoginRequest(
+public record AuthRequest(
         String username,
         String password
 ) {}
