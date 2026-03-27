@@ -78,9 +78,9 @@ export const columns: ColumnDef<SubmissionCell>[] = [
                 case 1:
                     return <SuccessBadge />
                 case 2:
-                    return <RunningBadge />
-                case 3:
                     return <PendingBadge />
+                case 3:
+                    return <RunningBadge />
             }
         }
     },

@@ -1,6 +1,3 @@
-import { useUser } from "@/context/user-context";
-import { useRouter } from "next/navigation";
-
 const PROXY_URL = "/api/proxy";
 
 export type UniResponse = {
@@ -9,11 +6,16 @@ export type UniResponse = {
   "data": object
 }
 
-export async function apiFetch(url: string, options: RequestInit = {}, isPublicEndpoint: boolean = false): Promise<UniResponse> {
+export async function apiFetch(url: string, options: RequestInit = {}, isPublicEndpoint: boolean = false, isJsonContent: boolean = true): Promise<UniResponse> {
   const token = localStorage.getItem("token");
 
+  let contentType: Record<string, string> = {}
+  if (isJsonContent) {
+    contentType = {"Content-Type": "application/json",}
+  }
+
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...contentType,
     ...(options.headers as Record<string, string>),
   };
 

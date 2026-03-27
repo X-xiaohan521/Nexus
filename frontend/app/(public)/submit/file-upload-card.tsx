@@ -106,8 +106,8 @@ export function FileUploadCard() {
 
         const response = await apiFetch("/api/submission", {
             method: "POST",
-            body: formData
-        })
+            body: formData,
+        }, false, false)
 
         if (response.code === 1) {
             toast.success("提交成功~", {position: "top-center"})
