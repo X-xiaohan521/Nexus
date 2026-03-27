@@ -1,6 +1,9 @@
 app:
   data:
     directory: ${NEXUS_DATA:./data}
+  mq:
+    request: mq.evaluate.request
+    result: mq.evaluate.result
 
 server:
   port: 6780

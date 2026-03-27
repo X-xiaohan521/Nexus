@@ -9,6 +9,7 @@ import org.unimilk.backend.dto.SubmissionDto;
 import org.unimilk.backend.entity.Submission;
 import org.unimilk.backend.entity.User;
 import org.unimilk.backend.exception.BusinessException;
+import org.unimilk.backend.mq.EvalReqProvider;
 import org.unimilk.backend.repo.SubmissionRepo;
 import org.unimilk.backend.repo.UserRepo;
 import org.unimilk.backend.request.EvaluateRequest;
@@ -29,11 +30,13 @@ public class SubmissionService {
 
     private final SubmissionRepo submissionRepo;
     private final UserRepo userRepo;
+    private final EvalReqProvider evalReqProvider;
 
     @Autowired
-    public SubmissionService(SubmissionRepo submissionRepo, UserRepo userRepo) {
+    public SubmissionService(SubmissionRepo submissionRepo, UserRepo userRepo, EvalReqProvider evalReqProvider) {
         this.submissionRepo = submissionRepo;
         this.userRepo = userRepo;
+        this.evalReqProvider = evalReqProvider;
     }
 
     public List<SubmissionDto> getSubmissionsByUserId(Integer userId) {
@@ -56,8 +59,16 @@ public class SubmissionService {
         String newFilename = UUID.randomUUID() + suffix;
         Path filePath = Path.of(dataDir, "submission", username, newFilename);
         String fileUri = Path.of("submission", username, newFilename).toString();
+
         try {
-            file.transferTo(new File(filePath.toUri()));
+            File dest = new File(filePath.toUri());
+            if (!dest.getParentFile().exists()) {
+                boolean isDirsMade = dest.getParentFile().mkdirs();
+                if (!isDirsMade) {
+                    throw new IOException("Cannot make parent folders.");
+                }
+            }
+            file.transferTo(dest);
         } catch (IOException e) {
             throw new BusinessException("Internal server error: cannot save file.", e);
         }
@@ -68,11 +79,13 @@ public class SubmissionService {
         Submission savedSubmission = submissionRepo.save(submission);
 
         // 4. kick off a worker to evaluate via mq.evaluate.request
-        startEvaluating(savedSubmission.getId(), savedSubmission.getFileUri(), System.currentTimeMillis());
+        startEvaluating(savedSubmission.getId(), savedSubmission.getFileUri());
     }
 
     private static void validateFile(String username, MultipartFile file) {
-        if (!file.getName().endsWith(".csv")) {
+        if (file.getOriginalFilename() == null) {
+            throw new BusinessException("文件名不允许为空！", "User " + username + " uploaded a file with an empty file name, frontend may be cracked.");
+        } else if (!file.getOriginalFilename().endsWith(".csv")) {
             throw new BusinessException("仅允许提交 .csv 文件！", "User " + username + " uploaded an illegal file, frontend may be cracked.");
         } else if (file.getSize() > 10485760) {
             throw new BusinessException("最大文件大小不得超过 10MB。", "User " + username + " uploaded a file larger than 10 MB, frontend may be cracked.");
@@ -83,21 +96,17 @@ public class SubmissionService {
         }
     }
 
-    private void startEvaluating(Integer submissionId, String fileUri, Long timeStamp) {
-        // 1. prepare mq message
-        EvaluateRequest msg = new EvaluateRequest(
+    private void startEvaluating(Integer submissionId, String fileUri) {
+        // 1. prepare eval request
+        EvaluateRequest request = new EvaluateRequest(
                 submissionId,
                 fileUri,
                 UUID.randomUUID().toString(),
-                timeStamp
+                System.currentTimeMillis()
         );
 
-        // 2. send message
-//        rabbitTemplate.convertAndSend(
-//                "submission.exchange",
-//                "judge.request",
-//                msg
-//        );
+        // 2. send request
+        evalReqProvider.sendEvalReq(request);
     }
 
     public void onFinishEvaluating() {
