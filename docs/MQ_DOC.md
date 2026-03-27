@@ -35,7 +35,7 @@ Database    ←    Spring Boot   ←   MQ(mq.evaluate.result)
 | ------------ | ------------------ |
 | submissionId | 主键（唯一识别）           |
 | fileUri      | Python 用来读取文件的路径    |
-| callbackId   | 用于匹配请求和响应（类似 RPC） |
+| callbackId   | 用于匹配请求和响应（保证一致） |
 | timestamp    | 调试/过期判断            |
 
 ---
@@ -46,9 +46,9 @@ Database    ←    Spring Boot   ←   MQ(mq.evaluate.result)
 {
   "submissionId": 123,
   "callbackId": "uuid-xxx",
-  "status": 1,
-  "score": 0.91,
-  "errorMsg": null
+  "status": 1,  // 0 表示失败，1 表示成功
+  "score": 0.91,   // 失败时返回 null
+  "errorMsg": null   // 失败时返回错误信息（中文），成功时返回 null
 }
 ```
 
