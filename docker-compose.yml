@@ -9,10 +9,17 @@ services:
     environment:
       JWT_SECRET: DKlaUOkMiiXfcuLE/Dip5bTqdsW4KBptpc1HEA8c4zg=
       NEXUS_DATA: /app/data
+      NEXUS_CAPTCHA_ID: <YOUR_CAPTCHA_ID>
+      NEXUS_CAPTCHA_KEY: <YOUR_CAPTCHA_KEY>
+      NEXUS_MQ_HOST: rabbit
+    depends_on:
+      - rabbit-mq
   frontend:
     build: ./frontend
     ports:
       - "7842:7842"
+    environment:
+      NEXUS_BACKEND_HOST: backend
     depends_on:
       - backend
   evaluator:
@@ -21,3 +28,13 @@ services:
       - ./backend/data:/app/data
     environment:
       NEXUS_DATA: /app/data
+      NEXUS_BACKEND_HOST: backend
+    depends_on:
+      - rabbit-mq
+      - backend
+  rabbit-mq:
+    image: rabbitmq:4-management
+    hostname: rabbit
+    ports:
+      - "15672:15672"
+      - "5672:5672"

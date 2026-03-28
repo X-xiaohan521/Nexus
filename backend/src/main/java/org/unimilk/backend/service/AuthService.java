@@ -1,16 +1,26 @@
 package org.unimilk.backend.service;
 
+import com.google.gson.Gson;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.unimilk.backend.dto.CaptchaResultDto;
 import org.unimilk.backend.dto.TokenDto;
 import org.unimilk.backend.dto.TokenBearer;
 import org.unimilk.backend.dto.UserDto;
 import org.unimilk.backend.entity.User;
 import org.unimilk.backend.exception.BusinessException;
 import org.unimilk.backend.repo.UserRepo;
+import org.unimilk.backend.response.CaptchaVerifyResponse;
 import org.unimilk.backend.util.JwtUtils;
 
 import java.util.ArrayList;
@@ -21,11 +31,19 @@ import java.util.regex.Pattern;
 public class AuthService {
     private final UserRepo userRepo;
     private final JwtUtils jwtUtils;
+    private final Gson gson;
+
+    @Value("${app.captcha.id}")
+    private String captchaId;
+
+    @Value("${app.captcha.key}")
+    private String captchaKey;
 
     @Autowired
-    public AuthService(UserRepo userRepo, JwtUtils jwtUtils) {
+    public AuthService(UserRepo userRepo, JwtUtils jwtUtils, Gson gson) {
         this.userRepo = userRepo;
         this.jwtUtils = jwtUtils;
+        this.gson = gson;
     }
 
     public TokenDto handleLogin(String username, String password) {
@@ -117,6 +135,36 @@ public class AuthService {
             return new UserDto(user.getId(), user.getUsername(), user.getRole());
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public void verifyCaptcha(CaptchaResultDto captchaResult) {
+        String signToken = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, captchaKey).hmacHex(captchaResult.lot_number());
+
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("lot_number", captchaResult.lot_number());
+        queryParams.add("captcha_output", captchaResult.captcha_output());
+        queryParams.add("pass_token", captchaResult.pass_token());
+        queryParams.add("gen_time", captchaResult.gen_time());
+        queryParams.add("sign_token", signToken);
+
+        String url = String.format("https://gcaptcha4.geetest.com" + "/validate" + "?captcha_id=%s", captchaId);
+        RestTemplate client = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpMethod method = HttpMethod.POST;
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        try {
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(queryParams, headers);
+            ResponseEntity<String> response = client.exchange(url, method, requestEntity, String.class);
+            String resBody = response.getBody();
+            CaptchaVerifyResponse verifyResponse = gson.fromJson(resBody, CaptchaVerifyResponse.class);
+            assert verifyResponse != null;
+            if (!("success".equals(verifyResponse.status()) && "success".equals(verifyResponse.result()))) {
+                throw new RuntimeException("Captcha verification failed.");
+            }
+        } catch (Exception e){
+            throw new BusinessException("验证码校验失败，请稍后再试。", "Captcha verification failed, please check GeeTest service.", e);
         }
     }
 }

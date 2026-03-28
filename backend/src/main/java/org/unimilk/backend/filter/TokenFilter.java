@@ -83,7 +83,8 @@ public class TokenFilter implements Filter {
     }
 
     private boolean isPublicPath(String path) {
-        return path.equals("/api/auth/login") || path.equals("/api/auth/register") || path.equals("/api/leaderboard");
+        return path.equals("/api/auth/login") || path.equals("/api/auth/register") || path.equals("/api/leaderboard")
+                || path.equals("/api/auth/captcha/init");
     }
 
     private boolean isAdminPath(String path) {

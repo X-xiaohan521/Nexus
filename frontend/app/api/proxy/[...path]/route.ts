@@ -1,7 +1,11 @@
 import { UniResponse } from "@/lib/api";
 import { NextRequest } from "next/server";
 
-const backendBase = "http://localhost:6780";
+const backendBase: string = `http://${
+  process.env.NEXUS_BACKEND_HOST ?? "localhost"
+}:${
+  process.env.NEXUS_BACKEND_PORT ?? "6780"
+}`;
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }>}) {
     return handleProxy(req, params);

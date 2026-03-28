@@ -4,6 +4,9 @@ app:
   mq:
     request: mq.evaluate.request
     result: mq.evaluate.result
+  captcha:
+    id: ${NEXUS_CAPTCHA_ID}
+    key: ${NEXUS_CAPTCHA_KEY}
 
 server:
   port: 6780
@@ -36,3 +39,9 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 200MB
+  rabbitmq:
+    host: ${NEXUS_MQ_HOST:localhost}
+    port: ${NEXUS_MQ_PORT:5672}
+    virtual-host: /
+    username: guest
+    password: guest
