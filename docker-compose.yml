@@ -9,6 +9,8 @@ services:
     environment:
       JWT_SECRET: DKlaUOkMiiXfcuLE/Dip5bTqdsW4KBptpc1HEA8c4zg=
       NEXUS_DATA: /app/data
+      NEXUS_CAPTCHA_ID: <YOUR_CAPTCHA_ID>
+      NEXUS_CAPTCHA_KEY: <YOUR_CAPTCHA_KEY>
   frontend:
     build: ./frontend
     ports:
