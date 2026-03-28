@@ -75,6 +75,10 @@ export function RegisterCard() {
   }
 
   const submitRegister = async () => {
+    if (!captchaResult) {
+      toast.error("请先完成验证码。", { position: "top-center" });
+      return;
+    }
     setRegistering(true);
 
     if (!(validateUsername() && validatePassword())) {
@@ -86,7 +90,8 @@ export function RegisterCard() {
       method: "POST",
       body: JSON.stringify({
         username: username,
-        password: password
+        password: password,
+        captchaResult: captchaResult
       })
     })
 

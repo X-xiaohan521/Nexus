@@ -32,6 +32,7 @@ public class AuthController {
     @PostMapping("/register")
     public UniResponse onRegister(@RequestBody AuthRequest req) throws InterruptedException {
         Thread.sleep(200);
+        authService.verifyCaptcha(req.captchaResult());
         TokenDto tokenDto = authService.handleRegister(req.username(), req.password());
         return UniResponse.success(tokenDto, "注册成功~");
     }
