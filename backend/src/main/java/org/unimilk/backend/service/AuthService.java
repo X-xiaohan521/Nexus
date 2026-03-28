@@ -164,7 +164,7 @@ public class AuthService {
                 throw new RuntimeException("Captcha verification failed.");
             }
         } catch (Exception e){
-            throw new BusinessException("验证码校验失败，请稍后再试。", "Captcha verification failed, please check GeeTest service.", e);
+            throw new BusinessException("验证码校验失败，请刷新页面后重试。", "Captcha verification failed, please check GeeTest service.", e);
         }
     }
 }
