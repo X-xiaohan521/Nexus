@@ -79,7 +79,11 @@ public class SubmissionService {
         Submission savedSubmission = submissionRepo.save(submission);
 
         // 4. kick off a worker to evaluate via mq.evaluate.request
-        startEvaluating(savedSubmission.getId(), savedSubmission.getFileUri());
+        try {
+            startEvaluating(savedSubmission.getId(), savedSubmission.getFileUri());
+        } catch (Exception e) {
+            throw new BusinessException("服务器异常，请联系管理员。", "Failed to start evaluating: unable to connect to MQ.", e);
+        }
     }
 
     private static void validateFile(String username, MultipartFile file) {
