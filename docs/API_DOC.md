@@ -77,6 +77,12 @@ POST /auth/register
 {
   "username": "string",
   "password": "string"
+  "captchaResult": {
+    "lot_number": "...",
+    "captcha_output": "...",
+    "pass_token": "...",
+    "gen_time": "..."
+  }
 }
 ```
 
@@ -127,6 +133,36 @@ GET /auth/refreshToken
       "code": 0,
       "data": null,
       "msg": "令牌无效，请重新登录。"
+    }
+    ```
+
+---
+
+### 4. 初始化 Captcha 凭证
+
+```
+GET /auth/captcha/init
+```
+
+获取人机验证凭证。
+
+**响应：**
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": {
+            "captchaId": "<极验captchaId>"
+        },
+      "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "服务繁忙，请稍后再试。"
     }
     ```
 

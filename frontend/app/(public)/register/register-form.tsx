@@ -18,6 +18,8 @@ import { TokenData } from "../login/login-form"
 import { apiFetch } from "@/lib/api"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
+import GeetestCaptcha from "@/components/ui/captcha"
+import { CaptchaResult } from "@/components/ui/captcha"
 
 export function RegisterCard() {
   const [username, setUsername] = useState("");
@@ -31,6 +33,8 @@ export function RegisterCard() {
   const router = useRouter()
 
   const { refreshUser } = useUser()
+
+  const [captchaResult, setCaptchaResult] = useState<CaptchaResult | null>(null)
 
   const validateUsername = (): boolean => {
     setUsernameMessage("");
@@ -71,6 +75,10 @@ export function RegisterCard() {
   }
 
   const submitRegister = async () => {
+    if (!captchaResult) {
+      toast.error("请先完成验证码。", { position: "top-center" });
+      return;
+    }
     setRegistering(true);
 
     if (!(validateUsername() && validatePassword())) {
@@ -82,7 +90,8 @@ export function RegisterCard() {
       method: "POST",
       body: JSON.stringify({
         username: username,
-        password: password
+        password: password,
+        captchaResult: captchaResult
       })
     })
 
@@ -143,6 +152,7 @@ export function RegisterCard() {
                 <FieldError>{passwordMessage}</FieldError>
               </Field>
             </div>
+            <GeetestCaptcha onSuccess={setCaptchaResult} />
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-2">
