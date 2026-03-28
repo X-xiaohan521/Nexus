@@ -39,3 +39,9 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 200MB
+  rabbitmq:
+    host: ${NEXUS_MQ_HOST:localhost}
+    port: ${NEXUS_MQ_PORT:5672}
+    virtual-host: /
+    username: guest
+    password: guest
