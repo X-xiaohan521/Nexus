@@ -22,7 +22,7 @@ public class Leader {
     Integer rank;
 
     String username;
-    Integer highestScore;
+    Float highestScore;
     LocalDateTime submissionTime;
 
     Integer userId;

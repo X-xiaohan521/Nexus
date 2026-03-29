@@ -5,6 +5,6 @@ import java.time.LocalDateTime;
 public record SubmissionDto(
         Integer id,
         Integer status,
-        Integer score,
+        Float score,
         LocalDateTime submissionTime
 ) {}

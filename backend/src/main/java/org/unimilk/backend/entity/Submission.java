@@ -21,7 +21,8 @@ public class Submission {
 
     String fileUri;
     Integer status;
-    Integer score;
+    Float score;
+    String errMsg;
     LocalDateTime submissionTime;
 
     @ManyToOne @JoinColumn(name = "user_id")

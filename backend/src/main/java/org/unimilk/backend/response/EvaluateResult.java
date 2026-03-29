@@ -1,6 +1,6 @@
 package org.unimilk.backend.response;
 
-public record EvaluateResponse(
+public record EvaluateResult(
          Integer submissionId,
          String callbackId,
          Integer status,

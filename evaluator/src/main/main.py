@@ -8,7 +8,7 @@ def callback(ch, method, properties, body):
     request = body.decode()
     print(f" [x] Received evaluate request {request}")
     result = evaluate(request)
-    print(" [x] Finished evaluating, sending back results")
+    print(f" [x] Finished evaluating, sending back results {result}")
     send_eval_result(result)
     print(" [x] Results sent, waiting for new requests")
     ch.basic_ack(delivery_tag=method.delivery_tag)

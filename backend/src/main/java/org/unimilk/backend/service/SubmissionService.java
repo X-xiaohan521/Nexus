@@ -1,5 +1,6 @@
 package org.unimilk.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,16 +14,19 @@ import org.unimilk.backend.mq.EvalReqProvider;
 import org.unimilk.backend.repo.SubmissionRepo;
 import org.unimilk.backend.repo.UserRepo;
 import org.unimilk.backend.request.EvaluateRequest;
+import org.unimilk.backend.response.EvaluateResult;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 public class SubmissionService {
     @Value("${app.data.directory}")
@@ -75,7 +79,7 @@ public class SubmissionService {
 
         // 3. save a record to the submission database
         User user = userRepo.findById(userId).orElseThrow(() -> new BusinessException("用户不存在，请联系管理员。", "User id " + userId + " not found."));
-        Submission submission = new Submission(null, fileUri, 3, null, submitTime, user);
+        Submission submission = new Submission(null, fileUri, 3, null, null, submitTime, user);
         Submission savedSubmission = submissionRepo.save(submission);
 
         // 4. kick off a worker to evaluate via mq.evaluate.request
@@ -108,12 +112,40 @@ public class SubmissionService {
                 UUID.randomUUID().toString(),
                 System.currentTimeMillis()
         );
+        log.info("Sending request to evaluator: {}", request);
 
         // 2. send request
         evalReqProvider.sendEvalReq(request);
     }
 
-    public void onFinishEvaluating() {
-        // listen to mq.evaluate.result
+    @Transactional
+    public void onFinishEvaluating(EvaluateResult result) {
+        // 1. find the corresponding submission via submissionId
+        Submission submission = submissionRepo.findById(result.submissionId()).orElse(null);
+        if (submission == null) {
+            log.error("Failed to save evaluate result {}: cannot find submission id {}.", result.callbackId(), result.submissionId());
+            return;
+        }
+
+        // 2. check if the status is 3(running), else return
+        if (!Objects.equals(3, submission.getStatus())) {
+            log.warn("Failed to save evaluate result {}: status of submission id {} is not 3(running).", result.callbackId(), submission.getId());
+        }
+
+        // 3. update status 3 -> 0(failed) / 1(success)
+        submission.setStatus(result.status());
+
+        // 4. update other info
+        switch (submission.getStatus()) {
+            // 4.1 status: 0 -> update err_msg
+            case 0:
+                submission.setErrMsg(result.errorMsg());
+
+            // 4.2 status: 1 -> update score
+            case 1:
+                submission.setScore(result.score());
+        }
+
+        submissionRepo.save(submission);
     }
 }
