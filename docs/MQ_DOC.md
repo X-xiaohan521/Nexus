@@ -24,6 +24,7 @@ Database    ←    Spring Boot   ←   MQ(mq.evaluate.result)
 {
   "submissionId": 123,
   "fileUri": "/submission/xxx.csv",
+  "correctAnswerUri": "correct_answer.csv",
   "callbackId": "uuid-xxx", 
   "timestamp": 1710000000
 }
@@ -35,12 +36,13 @@ Database    ←    Spring Boot   ←   MQ(mq.evaluate.result)
 | ------------ | ------------------ |
 | submissionId | 主键（唯一识别）           |
 | fileUri      | Python 用来读取文件的路径    |
+| correctAnswerUri | 正确答案的路径   |
 | callbackId   | 用于匹配请求和响应（保证一致） |
 | timestamp    | 调试/过期判断            |
 
 ---
 
-## 2. 响应消息（Python → Java）
+### 2. 响应消息（Python → Java）
 
 ```json
 {
