@@ -8,6 +8,7 @@ import org.apache.commons.codec.digest.HmacUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -32,6 +33,7 @@ public class AuthService {
     private final UserRepo userRepo;
     private final JwtUtils jwtUtils;
     private final Gson gson;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Value("${app.captcha.id}")
     private String captchaId;
@@ -40,10 +42,11 @@ public class AuthService {
     private String captchaKey;
 
     @Autowired
-    public AuthService(UserRepo userRepo, JwtUtils jwtUtils, Gson gson) {
+    public AuthService(UserRepo userRepo, JwtUtils jwtUtils, Gson gson, BCryptPasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.jwtUtils = jwtUtils;
         this.gson = gson;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public TokenDto handleLogin(String username, String password) {
@@ -55,7 +58,7 @@ public class AuthService {
         User user = userRepo.findByUsername(username).orElseThrow(() -> new BusinessException("用户不存在，请检查用户名是否有误。", "User " + username + " login failed: User not found."));
 
         // 3. check password
-        if (!password.equals(user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BusinessException("密码错误，请重新输入。", "User " + user.getUsername() + " login failed: password incorrect.");
         }
 
@@ -80,15 +83,18 @@ public class AuthService {
             throw new BusinessException("用户名已存在。", "User " + username + " register failed: username already exists.");
         }
 
-        // 3. store the new user to database
-        User user = new User(null, username, password, 0, new ArrayList<>());
+        // 3. encrypt password
+        String encryptedPassword = passwordEncoder.encode(password);
+
+        // 4. store the new user to database
+        User user = new User(null, username, encryptedPassword, 0, new ArrayList<>());
         try {
-            userRepo.save(user);
+            user = userRepo.save(user);
         } catch (Exception e) {
             throw new BusinessException("服务器异常，请联系管理员。", "User " + username + " register failed: unable to save user.");
         }
 
-        // 4. generate token
+        // 5. generate token
         try {
             log.info("User {} register success.", user.getUsername());
             String token = jwtUtils.generateToken(user.getId(), user.getUsername());
