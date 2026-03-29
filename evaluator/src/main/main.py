@@ -1,16 +1,24 @@
-# This is a sample Python script.
+import sys
 
-# Press Ctrl+F5 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from consumer import *
+from evaluator import *
+from provider import *
 
+def callback(ch, method, properties, body):
+    request = body.decode()
+    print(f" [x] Received evaluate request {request}")
+    result = evaluate(request)
+    print(" [x] Finished evaluating, sending back results")
+    send_eval_result(result)
+    print(" [x] Results sent, waiting for new requests")
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press F9 to toggle the breakpoint.
+def main():
+    print("Starting the submission evaluator...")
+    start_req_consumer(callback)
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)

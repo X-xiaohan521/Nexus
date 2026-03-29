@@ -27,4 +27,4 @@ COPY --from=builder /build/src .
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["python", "main.py"]
+CMD ["python", "src/main/main.py"]
