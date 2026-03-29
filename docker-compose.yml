@@ -29,6 +29,7 @@ services:
     environment:
       NEXUS_DATA: /app/data
       NEXUS_BACKEND_HOST: backend
+      NEXUS_MQ_HOST: rabbit
     depends_on:
       - rabbit-mq
       - backend
