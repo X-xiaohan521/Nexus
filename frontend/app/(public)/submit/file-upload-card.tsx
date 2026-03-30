@@ -46,8 +46,8 @@ export function FileUploadCard() {
         if (file.type !== "text/csv") {
             toast.error("仅允许提交 .csv 文件！", {position: "top-center"})
             return false
-        } else if (file.size > 10485760) {
-            toast.error("最大文件大小不得超过 10MB。", {position: "top-center"})
+        } else if (file.size > 104857600) {
+            toast.error("最大文件大小不得超过 100MB。", {position: "top-center"})
             return false
         } else if (file.name.length > 50) {
             toast.error("文件名长度不得超过 50 个字符。", {position: "top-center"})

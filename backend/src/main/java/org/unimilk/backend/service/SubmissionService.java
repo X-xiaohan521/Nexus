@@ -98,8 +98,8 @@ public class SubmissionService {
             throw new BusinessException("文件名不允许为空！", "User " + username + " uploaded a file with an empty file name, frontend may be cracked.");
         } else if (!file.getOriginalFilename().endsWith(".csv")) {
             throw new BusinessException("仅允许提交 .csv 文件！", "User " + username + " uploaded an illegal file, frontend may be cracked.");
-        } else if (file.getSize() > 10485760) {
-            throw new BusinessException("最大文件大小不得超过 10MB。", "User " + username + " uploaded a file larger than 10 MB, frontend may be cracked.");
+        } else if (file.getSize() > 104857600) {
+            throw new BusinessException("最大文件大小不得超过 100MB。", "User " + username + " uploaded a file larger than 10 MB, frontend may be cracked.");
         } else if (file.getName().length() > 50) {
             throw new BusinessException("文件名长度不得超过 50 个字符。", "User " + username + " uploaded a file with a name longer than 50 characters, frontend may be cracked.");
         } else if (!Pattern.matches("^[ \u4e00-\u9fa5a-zA-Z0-9._-]+$", file.getName())) {

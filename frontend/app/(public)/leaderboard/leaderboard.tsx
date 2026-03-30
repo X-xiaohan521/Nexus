@@ -40,7 +40,7 @@ export default function Leaderboard() {
     }, [])
     
     return (
-        <div className="flex flex-col justify-center mx-auto lg:w-200 md:w-120 sm:w-64">
+        <div className="flex flex-col justify-center mx-auto lg:w-200 md:w-120 sm:w-64 h-full pt-12">
             <div className="flex items-center justify-between px-2">
                 <div className="flex items-end">
                     <h1 className="flex text-xl font-bold">排行榜</h1>
