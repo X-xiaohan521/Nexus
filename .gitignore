@@ -2,3 +2,4 @@
 /backend/data/
 /evaluator/.venv
 __pycache__
+/evaluate_xc/
