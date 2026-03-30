@@ -74,7 +74,7 @@ public class TestSettingsManager {
     void testSavingAndLoadingCustomSettings() {
         Settings settings = new Settings();
         settings.setLeaderboardRefreshRate(8000);
-        settings.setCorrectAnswer("another_correct_answer.csv");
+        settings.setGroundTruth("another_correct_answer.csv");
         settingsManager.applyAndSaveSettingsFrom(settings);
         Settings newSettings = settingsManager.getSettings();
         assertEquals(settings, newSettings);

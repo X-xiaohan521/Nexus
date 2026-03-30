@@ -15,6 +15,7 @@ import org.unimilk.backend.repo.SubmissionRepo;
 import org.unimilk.backend.repo.UserRepo;
 import org.unimilk.backend.request.EvaluateRequest;
 import org.unimilk.backend.response.EvaluateResult;
+import org.unimilk.backend.settings.SettingsManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +33,14 @@ public class SubmissionService {
     @Value("${app.data.directory}")
     private String dataDir;
 
+    private final SettingsManager settingsManager;
     private final SubmissionRepo submissionRepo;
     private final UserRepo userRepo;
     private final EvalReqProvider evalReqProvider;
 
     @Autowired
-    public SubmissionService(SubmissionRepo submissionRepo, UserRepo userRepo, EvalReqProvider evalReqProvider) {
+    public SubmissionService(SettingsManager settingsManager, SubmissionRepo submissionRepo, UserRepo userRepo, EvalReqProvider evalReqProvider) {
+        this.settingsManager = settingsManager;
         this.submissionRepo = submissionRepo;
         this.userRepo = userRepo;
         this.evalReqProvider = evalReqProvider;
@@ -109,6 +112,7 @@ public class SubmissionService {
         EvaluateRequest request = new EvaluateRequest(
                 submissionId,
                 fileUri,
+                settingsManager.getSettings().getGroundTruth(),
                 UUID.randomUUID().toString(),
                 System.currentTimeMillis()
         );

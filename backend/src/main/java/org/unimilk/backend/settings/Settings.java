@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 public class Settings {
     private Integer leaderboardRefreshRate = 3600;
-    private String correctAnswer = "correct_answer.csv";
+    private String groundTruth = "./data/ground_truth";
     private boolean isLeaderboardEnabled = true;
 }
