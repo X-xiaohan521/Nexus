@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:python3.12-trixie AS builder
+FROM ghcr.io/astral-sh/uv:debian AS builder
 
 WORKDIR /build
 ENV UV_COMPILE_BYTECODE=1
