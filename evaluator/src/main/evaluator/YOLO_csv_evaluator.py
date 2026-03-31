@@ -3,6 +3,8 @@ import json
 import math
 from collections import defaultdict
 from pathlib import Path
+
+import numpy as np
 from loguru import logger
 
 from config import NEXUS_DATA
@@ -21,6 +23,8 @@ REQUIRED_CSV_COLUMNS = {
     "confidence",
 }
 
+IOUV = np.linspace(0.5, 0.95, 10)
+
 class UserInputError(Exception):
     pass
 
@@ -33,19 +37,13 @@ def yolo_to_xyxy(xc, yc, w, h):
     return xc - w / 2, yc - h / 2, xc + w / 2, yc + h / 2
 
 
-def get_iouv(torch):
-    return torch.linspace(0.5, 0.95, 10)
-
-
 def ensure_runtime():
     try:
         import numpy  # noqa: F401
-        import torch
-        from ultralytics.utils.metrics import ap_per_class, box_iou
     except Exception as e:
         logger.error(f"依赖加载失败: {e}")
         raise ServiceError()
-    return torch, ap_per_class, box_iou
+    return np
 
 
 def parse_json_text(text):
@@ -220,30 +218,94 @@ def load_pred_csv(path):
     return rows
 
 
-def match_predictions(pred_classes, true_classes, iou, torch):
-    import numpy as np
+def box_iou(box1, box2):
+    if box1.size == 0 or box2.size == 0:
+        return np.zeros((len(box1), len(box2)), dtype=np.float32)
 
-    iouv = get_iouv(torch)
-    correct = np.zeros((pred_classes.shape[0], iouv.shape[0]), dtype=bool)
-    correct_class = true_classes[:, None] == pred_classes
-    iou = (iou * correct_class).cpu().numpy()
+    box1 = box1.astype(np.float32)
+    box2 = box2.astype(np.float32)
 
-    for i, thr in enumerate(iouv.tolist()):
-        matches = np.nonzero(iou >= thr)
-        matches = np.array(matches).T
+    inter_x1 = np.maximum(box1[:, None, 0], box2[None, :, 0])
+    inter_y1 = np.maximum(box1[:, None, 1], box2[None, :, 1])
+    inter_x2 = np.minimum(box1[:, None, 2], box2[None, :, 2])
+    inter_y2 = np.minimum(box1[:, None, 3], box2[None, :, 3])
+
+    inter_w = np.clip(inter_x2 - inter_x1, 0.0, None)
+    inter_h = np.clip(inter_y2 - inter_y1, 0.0, None)
+    inter = inter_w * inter_h
+
+    area1 = np.clip(box1[:, 2] - box1[:, 0], 0.0, None) * np.clip(box1[:, 3] - box1[:, 1], 0.0, None)
+    area2 = np.clip(box2[:, 2] - box2[:, 0], 0.0, None) * np.clip(box2[:, 3] - box2[:, 1], 0.0, None)
+
+    union = area1[:, None] + area2[None, :] - inter
+    union = np.clip(union, 1e-12, None)
+    return inter / union
+
+
+def match_predictions(pred_classes, true_classes, iou):
+    correct = np.zeros((pred_classes.shape[0], IOUV.shape[0]), dtype=bool)
+    correct_class = true_classes[:, None] == pred_classes[None, :]
+    iou = iou * correct_class
+
+    for i, threshold in enumerate(IOUV.tolist()):
+        matches = np.argwhere(iou >= threshold)
         if matches.shape[0]:
             if matches.shape[0] > 1:
-                matches = matches[iou[matches[:, 0], matches[:, 1]].argsort()[::-1]]
-                matches = matches[np.unique(matches[:, 1], return_index=True)[1]]
-                matches = matches[np.unique(matches[:, 0], return_index=True)[1]]
+                match_ious = iou[matches[:, 0], matches[:, 1]]
+                order = match_ious.argsort()[::-1]
+                matches = matches[order]
+                _, unique_pred_idx = np.unique(matches[:, 1], return_index=True)
+                matches = matches[np.sort(unique_pred_idx)]
+                _, unique_gt_idx = np.unique(matches[:, 0], return_index=True)
+                matches = matches[np.sort(unique_gt_idx)]
             correct[matches[:, 1].astype(int), i] = True
 
-    return torch.tensor(correct, dtype=torch.bool)
+    return correct
 
 
-def build_stats(gts, preds_rows, torch, box_iou):
-    import numpy as np
+def compute_ap(recall, precision):
+    mrec = np.concatenate(([0.0], recall, [1.0]))
+    mpre = np.concatenate(([1.0], precision, [0.0]))
+    mpre = np.flip(np.maximum.accumulate(np.flip(mpre)))
+    x = np.linspace(0, 1, 101)
+    return np.trapz(np.interp(x, mrec, mpre), x)
 
+
+def ap_per_class(tp, conf, pred_cls, target_cls):
+    eps = 1e-16
+
+    if tp.shape[0] == 0:
+        return np.zeros((0, tp.shape[1]), dtype=np.float32)
+
+    order = np.argsort(-conf)
+    tp = tp[order]
+    conf = conf[order]
+    pred_cls = pred_cls[order]
+
+    unique_classes = np.unique(target_cls.astype(np.int64))
+    ap = np.zeros((unique_classes.shape[0], tp.shape[1]), dtype=np.float32)
+
+    for ci, c in enumerate(unique_classes):
+        i = pred_cls == c
+        n_l = (target_cls == c).sum()
+        n_p = i.sum()
+
+        if n_l == 0 or n_p == 0:
+            continue
+
+        fpc = (1 - tp[i].astype(np.float32)).cumsum(0)
+        tpc = tp[i].astype(np.float32).cumsum(0)
+
+        recall = tpc / (n_l + eps)
+        precision = tpc / (tpc + fpc + eps)
+
+        for j in range(tp.shape[1]):
+            ap[ci, j] = compute_ap(recall[:, j], precision[:, j])
+
+    return ap
+
+
+def build_stats(gts, preds_rows):
     by_img = defaultdict(list)
     for pred in preds_rows:
         by_img[pred["image_id"]].append(pred)
@@ -255,42 +317,39 @@ def build_stats(gts, preds_rows, torch, box_iou):
         pred_list = by_img.get(image_id, [])
 
         if gt_list:
-            gt_boxes = torch.tensor(
-                [yolo_to_xyxy(*x[1:5]) for x in gt_list],
-                dtype=torch.float32,
-            )
-            gt_classes = torch.tensor([x[0] for x in gt_list], dtype=torch.float64)
+            gt_boxes = np.array([yolo_to_xyxy(*x[1:5]) for x in gt_list], dtype=np.float32)
+            gt_classes = np.array([x[0] for x in gt_list], dtype=np.int64)
         else:
-            gt_boxes = torch.zeros((0, 4), dtype=torch.float32)
-            gt_classes = torch.zeros((0,), dtype=torch.float64)
+            gt_boxes = np.zeros((0, 4), dtype=np.float32)
+            gt_classes = np.zeros((0,), dtype=np.int64)
 
         if pred_list:
-            pred_boxes = torch.tensor(
+            pred_boxes = np.array(
                 [yolo_to_xyxy(p["x_center"], p["y_center"], p["width"], p["height"]) for p in pred_list],
-                dtype=torch.float32,
+                dtype=np.float32,
             )
-            pred_conf = torch.tensor([p["confidence"] for p in pred_list], dtype=torch.float32)
-            pred_classes = torch.tensor([p["class_id"] for p in pred_list], dtype=torch.float64)
+            pred_conf = np.array([p["confidence"] for p in pred_list], dtype=np.float32)
+            pred_classes = np.array([p["class_id"] for p in pred_list], dtype=np.int64)
         else:
-            pred_boxes = torch.zeros((0, 4), dtype=torch.float32)
-            pred_conf = torch.zeros((0,), dtype=torch.float32)
-            pred_classes = torch.zeros((0,), dtype=torch.float64)
+            pred_boxes = np.zeros((0, 4), dtype=np.float32)
+            pred_conf = np.zeros((0,), dtype=np.float32)
+            pred_classes = np.zeros((0,), dtype=np.int64)
 
         if gt_classes.shape[0] == 0 and pred_classes.shape[0] == 0:
             continue
 
         if gt_classes.shape[0] == 0 or pred_classes.shape[0] == 0:
-            tp = np.zeros((pred_classes.shape[0], 10), dtype=bool)
+            tp = np.zeros((pred_classes.shape[0], IOUV.shape[0]), dtype=bool)
         else:
             iou = box_iou(gt_boxes, pred_boxes)
-            tp = match_predictions(pred_classes, gt_classes, iou, torch).numpy()
+            tp = match_predictions(pred_classes, gt_classes, iou)
 
         if pred_classes.shape[0]:
             tps.append(tp)
-            confs.append(pred_conf.numpy())
-            pred_clss.append(pred_classes.numpy())
+            confs.append(pred_conf)
+            pred_clss.append(pred_classes)
         if gt_classes.shape[0]:
-            target_clss.append(gt_classes.numpy())
+            target_clss.append(gt_classes)
 
     if not tps:
         return None
@@ -299,12 +358,12 @@ def build_stats(gts, preds_rows, torch, box_iou):
         "tp": np.concatenate(tps, axis=0),
         "conf": np.concatenate(confs, axis=0),
         "pred_cls": np.concatenate(pred_clss, axis=0),
-        "target_cls": np.concatenate(target_clss, axis=0) if target_clss else np.array([]),
+        "target_cls": np.concatenate(target_clss, axis=0) if target_clss else np.array([], dtype=np.int64),
     }
 
 
 def evaluate_score(gt_dir, pred_path):
-    torch, ap_per_class, box_iou = ensure_runtime()
+    ensure_runtime()
     gts, gt_count = load_gt(gt_dir)
     preds = load_pred_csv(pred_path)
 
@@ -313,7 +372,7 @@ def evaluate_score(gt_dir, pred_path):
         raise ServiceError()
 
     try:
-        stats = build_stats(gts, preds, torch, box_iou)
+        stats = build_stats(gts, preds)
     except UserInputError:
         raise
     except Exception as e:
@@ -328,18 +387,17 @@ def evaluate_score(gt_dir, pred_path):
         raise ServiceError()
 
     try:
-        _, _, _, _, _, ap_arr, _, *_ = ap_per_class(
+        ap_arr = ap_per_class(
             stats["tp"],
             stats["conf"],
             stats["pred_cls"],
             stats["target_cls"],
-            plot=False,
         )
     except Exception as e:
         logger.error(f"AP计算失败: {e}")
         raise ServiceError()
 
-    score = float(ap_arr.mean()) if getattr(ap_arr, "size", 0) else 0.0
+    score = float(ap_arr.mean()) if ap_arr.size else 0.0
     if not math.isfinite(score):
         logger.error(f"评测结果非法: score={score}")
         raise ServiceError()
