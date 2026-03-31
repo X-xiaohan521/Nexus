@@ -5,6 +5,8 @@ import { TopBar } from "./navbar";
 import { ThemeProvider, useTheme } from "next-themes";
 import { UserProvider } from "@/context/user-context";
 import { Toaster } from "sonner";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,8 +48,9 @@ export default function RootLayout({
             <Toaster />
 
             {/* footer */}
-            <footer className="h-12 flex items-center justify-center shadow-md">
-              <p className="">Copyright © 2026 - AiLab</p>
+            <footer className="h-12 flex flex-col items-center justify-center shadow-md pb-4">
+              <Link href="https://beian.miit.gov.cn/"><Button variant="link" className="text-secondary-foreground">蜀ICP备2026014434号</Button></Link>
+              <p className="text-sm">Copyright © 2026 - AiLab</p>
             </footer>
           </ThemeProvider>
         </body>
