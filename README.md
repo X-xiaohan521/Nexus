@@ -89,6 +89,39 @@
 
 ---
 
+## 🧾 数据目录
+> 首次启动后端时，会在环境变量 `NEXUS_DATA` 值所在目录下生成 `./data` 目录，结构如下：
+```dtp
+data/
+├── ground_truth
+├── log
+│   ├── backend
+│   │   ├── 2026-03-29-0.log
+│   │   ├── 2026-03-30-0.log
+│   │   └── 2026-03-31-0.log
+│   └── evaluator
+│       └── evaluator.log
+├── submission
+│   ├── Alice
+│   │   ├── 189385ba-ab19-408f-b519-932c48eafcfc.csv
+│   │   └── 3445d9de-2ee3-41bc-9d3d-2f42bff16af7.csv
+│   ├── jusus
+│   │   └── cb20f6c3-23f8-4d5d-acc4-e15dee1fa7ef.csv
+│   ├── Milk
+│   │   └── 91f215cd-79f1-4125-a8de-beff8c474efe.csv
+│   └── test
+│       ├── 1022ba5c-3816-45b8-a8dd-0c6dc3bafe4a.csv
+│       ├── 382daaac-a614-419b-81dc-742c03a18ad4.csv
+│       ├── 425394cf-b1f5-42c7-9f93-fe503c920f09.csv
+│       ├── 89eb80ba-a19e-4b40-a9db-2f7a64998058.csv
+│       ├── b5f8f378-1807-4eea-882f-1a94829031f3.csv
+│       └── ef500966-c653-4f5d-846a-c0423ae02914.csv
+├── config.json
+└── data.db
+```
+
+---
+
 ## ⚙️ 配置文件
 
 Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
@@ -100,3 +133,52 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
   "isLeaderboardEnabled": true   // 排行榜是否开启
 }
 ```
+
+> [!NOTE]
+> 配置文件更改后，需要重启后端服务才能生效。
+
+---
+
+## 🛠️ 技术栈
+> 本项目为全栈平台极项目，使用技术栈如下：
+* Java Spring Boot
+* Spring Data JPA
+* Spring Security
+* Next.js
+* Tailwind CSS
+* Shadcn UI
+* Rabbit MQ
+* Docker
+* Python
+
+---
+
+## 📜 Changelog
+
+> 📌 此处只列出最新版本，更早版本详见 `CHANGELOG.md`。
+
+### [1.0.0] - 2026-03-31
+
+### 🌟 初始版本
+- 实现了打榜系统的基本功能。
+
+### 🆕 新增
+- 新增用户注册、登录功能。
+- 新增提交 `.csv` 功能。
+- 新增自动计算排行榜功能、定时刷新排行榜功能。
+- 新增自动评估脚本，使用消息队列异步通信。
+
+### 🛠 修复
+- 修复了前端导航栏遮挡画面内容的 bug。
+
+---
+
+## 📞 联系方式
+> 如果你需要帮助，或有部署、商业合作等需求，欢迎联系我。
+### 📧 Email: unimilk891@gmail.com
+### 🌐 GitHub: [X-xiaohan521](https://github.com/X-xiaohan521/)
+
+---
+
+## 📌 结语
+### 感谢使用 Nexus！如果你觉得这个平台好用，请 Star ⭐ 这个 GitHub 项目，或在评论区留言反馈！🚀

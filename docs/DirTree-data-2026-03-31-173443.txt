@@ -1,0 +1,26 @@
+data/
+├── ground_truth
+├── log
+│   ├── backend
+│   │   ├── 2026-03-29-0.log
+│   │   ├── 2026-03-30-0.log
+│   │   └── 2026-03-31-0.log
+│   └── evaluator
+│       └── evaluator.log
+├── submission
+│   ├── Alice
+│   │   ├── 189385ba-ab19-408f-b519-932c48eafcfc.csv
+│   │   └── 3445d9de-2ee3-41bc-9d3d-2f42bff16af7.csv
+│   ├── jusus
+│   │   └── cb20f6c3-23f8-4d5d-acc4-e15dee1fa7ef.csv
+│   ├── Milk
+│   │   └── 91f215cd-79f1-4125-a8de-beff8c474efe.csv
+│   └── test
+│       ├── 1022ba5c-3816-45b8-a8dd-0c6dc3bafe4a.csv
+│       ├── 382daaac-a614-419b-81dc-742c03a18ad4.csv
+│       ├── 425394cf-b1f5-42c7-9f93-fe503c920f09.csv
+│       ├── 89eb80ba-a19e-4b40-a9db-2f7a64998058.csv
+│       ├── b5f8f378-1807-4eea-882f-1a94829031f3.csv
+│       └── ef500966-c653-4f5d-846a-c0423ae02914.csv
+├── config.json
+└── data.db
