@@ -1,79 +1,101 @@
 # Nexus - AI 比赛打榜系统
 
-> 一个用于人工智能比赛打榜的系统，基于 SpringBoot + Next.js。
+> 🚀 Nexus, 一个用于人工智能比赛打榜的系统，旨在提供简洁、易用、可扩展的比赛打榜平台，基于 SpringBoot + Next.js。
+
+## 📋 概览 Overview
+
+* **当前版本**：v1.0.0
+* **Web-UI 默认端口**：7842
+* **建议使用 Docker 部署**
+
+![home page](./images/homepage.png)
 
 ---
 
-## 概览
-
-* 当前版本：v1.0.0
-* Web-UI 默认端口：7842
-
----
-
-## 功能描述
-### 1. 账号
-* 提供账号 注册 + 登录，实名由额外表单完成
-* 进入系统先检查是否登录，没有登录则跳转到登录页，并在登录卡片上提供注册按钮 -> 跳转到注册页
+## ✨ 功能概述 Features
+### 1. 用户账号
+* 提供用户账号 注册 + 登录 功能
+* 未登录用户可以查看排行榜，但提交结果需要登录
 
 ### 2. 文件上传 + 个人提交记录
-* 在账号登录之后，提供文件 .csv 上传功能
-* 在文件上传框上方显示：“当前时段将提交至 A 榜”
-* 在文件上传框下面，显示个人提交记录
+* 在账号登录之后，提供 .csv 文件上传功能
+* 在文件上传框下方，将显示个人提交记录
 
-```text
------------
-|         |
-|  点击   |
-|  提交   |
------------
+![submit page](./images/submissions.png)
 
-确认提交    取消
-```
-
-| # | 状态（成功/失败/评测中） | 分数 | 提交时间 |
-| - | ---------------- | ---- | ------- |
-| 1 |     √ 成功       | 83 | 2026-03-15 22:30 |
-| 2 |     X 失败       | 无 | 2026-03-16 09:24 |
-| 3 |     O 评测中      | 无 | 2026-03-17 14:17 |
-
-![submissions table](./images/submissions.png)
-
-### 3. 评测
-* 核心算法：根据选手提交的 .csv ，和标准答案比对计算准确率
+### 3. 自动评测
+* 核心算法：根据选手提交的 .csv ，和 `ground_truth` 比对计算准确率
+* 高自定义：可自定义 判分脚本 和 `ground_truth`
+* 可横向扩展：支持同时运行多个评测节点，自动负载均衡
 * Rabbit MQ 消息队列，异步消费评测任务
-* 限制提交次数、频率
 
-### 4. 榜单
-* 计算的分数保存在数据库中，按分数由高到低排序
-
-| 排名 | 用户名 | 分数 | 提交时间 |
-| --- | ------ | ---- | ------- |
-| 1   | Milk   | 91   | 2026-03-17 14:17 |
-| 2   | John   | 90   | 2026-03-16 15:17 |
-| 3   | Alice   | 88   | 2026-03-15 17:43 |
+### 4. 自动计算排行榜
+* 自动取用户最高分数计入排行榜
+* 排行榜保存在数据库中，按分数由高到低排序
 
 ![leaderboard](./images/leaderboard.png)
 
-* A 榜单：某时段（YYYY-mm-dd hh-mm-ss ~ YYYY-mm-dd hh-mm-ss）开放，到截止时间后静止（不允许再提交）
-* B 榜单：从 A 榜单静止后开放，只有 A 榜单排名到前 n% 才允许提交到 B 榜单
+---
 
-## 管理面板
+## 📥 快速开始 Quick Start
 
-* 设置排行榜刷新间隔
-* 设置提交启闭时间 / 立即启闭提交
-* 设置正确答案
-* 查看所有提交记录
+### 🐳 使用 Docker 部署
+> 强烈建议使用 Docker 部署该项目，可大大降低部署复杂度。
+
+`docker-compose.yml` 示例：
+
+```yml
+
+```
+
+### 📦 Build from soure
+1. 下载源代码
+
+    ```bash
+    git clone https://github.com/X-xiaohan521/AiRankingSystem.git
+    ```
+
+2. 部署 frontend
+
+    部署前端需要安装 npm，确保安装后，进入 `./frontend` 目录，执行：
+
+    ```bash
+    npm run build
+    npm run start
+    ```
+
+    即可在 `localhost:7842` 看到前端页面。
+
+3. 部署 backend
+
+    部署后端需要 JRE 21 环境 以及 maven，进入 `./backend` 目录，执行：
+    ```bash
+    mvn clean package
+    java -jar ./target/backend-1.0.0.jar
+    ```
+    即可在 `localhost:6780` 启动后端服务。
+
+4. 部署评测节点 evaluator
+
+    部署评测节点前需要先部署 Rabbit MQ，具体方法详见 [Installing RabbitMQ](https://www.rabbitmq.com/docs/download) 官方文档。
+
+    此外，还需准备 uv 用于管理 python 包。准备完成后，进入 `./evaluator` 目录，执行：
+    ```bash
+    uv sync
+    uv run ./src/main/main.py
+    ```
+    即可启动一个评估节点。值得注意的是，评估节点可以同时启动多个，支持节点自动负载均衡。
+
 
 ---
 
-## 配置文件
+## ⚙️ 配置文件
 
-使用 `config.json` 配置文件存储服务端配置。
+Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 ```json
 {
-  "leaderboardRefreshRate": 3600,   // 单位：s（秒）
+  "leaderboardRefreshRate": 3600,   // 排行榜刷新间隔，单位：s（秒）
   "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
   "isLeaderboardEnabled": true   // 排行榜是否开启
 }
