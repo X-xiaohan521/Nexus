@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:0.5-python3.13-alpine AS builder
+FROM ghcr.io/astral-sh/uv:python3.12-trixie AS builder
 
 WORKDIR /build
 ENV UV_COMPILE_BYTECODE=1
@@ -11,7 +11,7 @@ RUN uv sync --frozen --no-dev
 # Copy application source
 COPY src ./src
 
-FROM python:3.13-alpine AS runtime
+FROM python:3.12 AS runtime
 
 ENV LANG="C.UTF-8" \
     TZ=Asia/Shanghai \
