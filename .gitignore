@@ -1,0 +1,6 @@
+/backend/target
+/backend/data/
+/evaluator/.venv
+__pycache__
+/evaluate_xc/
+/deployment/

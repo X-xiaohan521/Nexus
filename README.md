@@ -1,511 +1,184 @@
-# AI 打榜比赛系统
+# Nexus - AI 比赛打榜系统
 
-> 一个用于人工智能比赛打榜的系统，基于 SpringBoot + Next.js。
+> 🚀 Nexus, 一个用于人工智能比赛打榜的系统，旨在提供简洁、易用、可扩展的比赛打榜平台，基于 SpringBoot + Next.js。
 
-当前版本：v1.0.0
+## 📋 概览 Overview
 
-## 功能描述
-### 1. 账号
-* 提供账号 注册 + 登录，实名由额外表单完成
-* 进入系统先检查是否登录，没有登录则跳转到登录页，并在登录卡片上提供注册按钮 -> 跳转到注册页
+* **当前版本**：v1.0.0
+* **Web-UI 默认端口**：7842
+* **建议使用 Docker 部署**
+
+![home page](./images/homepage.png)
+
+---
+
+## ✨ 功能概述 Features
+### 1. 用户账号
+* 提供用户账号 注册 + 登录 功能
+* 未登录用户可以查看排行榜，但提交结果需要登录
 
 ### 2. 文件上传 + 个人提交记录
-* 在账号登录之后，提供文件 .csv / .xml / .txt 上传功能
-* 在文件上传框上方显示：“当前时段将提交至 A 榜”
-* 在文件上传框下面，显示个人提交记录
+* 在账号登录之后，提供 .csv 文件上传功能
+* 在文件上传框下方，将显示个人提交记录
 
-```text
------------
-|         |
-|  点击   |
-|  提交   |
------------
+![submit page](./images/submissions.png)
 
-确认提交    取消
-```
+### 3. 自动评测
+* 核心算法：根据选手提交的 .csv ，和 `ground_truth` 比对计算准确率
+* 高自定义：可自定义 判分脚本 和 `ground_truth`
+* 可横向扩展：支持同时运行多个评测节点，自动负载均衡
+* Rabbit MQ 消息队列，异步消费评测任务
 
-| # | 状态（成功/失败/判分中） | 分数 | 提交时间 |
-| - | ---------------- | ---- | ------- |
-| 1 |     √ 成功       | 83 | 2026-03-15 22:30 |
-| 2 |     X 失败       | 无 | 2026-03-16 09:24 |
-| 3 |     O 判分中      | 无 | 2026-03-17 14:17 |
-
-![submissions table](./images/submissions.png)
-
-### 3. 判分
-* 核心算法：根据选手提交的 .csv / .xml / .txt，和标准答案比对计算准确率
-
-### 4. 榜单
-* 计算的分数保存在数据库中，按分数由高到低排序
-
-| 排名 | 用户名 | 分数 | 提交时间 |
-| --- | ------ | ---- | ------- |
-| 1   | Milk   | 91   | 2026-03-17 14:17 |
-| 2   | John   | 90   | 2026-03-16 15:17 |
-| 3   | Alice   | 88   | 2026-03-15 17:43 |
+### 4. 自动计算排行榜
+* 自动取用户最高分数计入排行榜
+* 排行榜保存在数据库中，按分数由高到低排序
 
 ![leaderboard](./images/leaderboard.png)
 
-* A 榜单：某时段（YYYY-mm-dd hh-mm-ss ~ YYYY-mm-dd hh-mm-ss）开放，到截止时间后静止（不允许再提交）
-* B 榜单：从 A 榜单静止后开放，只有 A 榜单排名到前 n% 才允许提交到 B 榜单
+---
 
-## 管理面板
+## 📥 快速开始 Quick Start
 
-* 设置排行榜刷新间隔
-* 设置提交启闭时间 / 立即启闭提交
-* 设置正确答案
-* 查看所有提交记录
+### 🐳 使用 Docker 部署
+> 强烈建议使用 Docker 部署该项目，可大大降低部署复杂度。
 
-## 数据库设计
-### 数据表及字段
-#### 1. user 表
-| id | username | password | role 0(user) / 1(admin) |
-| --- | ------ | ---------- | --- |
-| 1   | Milk   | $2a$10$...   | 1 |
-| 2   | John   | $2a$10$...   | 0 |
+`docker-compose.yml` 示例：
 
-#### 2. submission 表
-| id | file_uri | status 0(Failed) / 1(Done) / 2(In progress) | score | submission_time | user_id |
-| --- | ------ | ------ | ---------- | ----------| --------- |
-| 1   |  /submission/4a275939-f701-4afb-b1e0-4dcab814a4ea.txt   | 1 | 91 | 2026-03-17 14:17 | 1 |
-| 2   |  /submission/5a2b833c-3113-40ce-aa22-3a8ac6ccf7bd.txt   | 0 | null | 2026-03-16 09:24 | 3 |
-| 3   |  /submission/ef718657-eb25-4b5b-8263-0217e83490a0.txt   | 1 | 90 | 2026-03-16 15:17 | 2 |
+```yml
 
+```
 
-#### 3. leaderboard 表
-| id | user_id | username | submission_id | highest_score | submission_time |
-| -- | ------- | -------- | ------------- | ------------- | --------------- |
-| 1  |    1    | Milk     |  1            |  91           | 2026-03-17 14:17 |
-| 2  |    2    | John     |  3            |  90           | 2026-03-16 15:17 |
+### 📦 Build from soure
+1. 下载源代码
 
-> 注：leaderboard 表不包含任何额外信息，故可以删除，随时从 user 和 submission 表重建。leaderboard 表的刷新为定时任务，按照一定时间间隔自动根据上两张表生成。
+    ```bash
+    git clone https://github.com/X-xiaohan521/AiRankingSystem.git
+    ```
+
+2. 部署 frontend
+
+    部署前端需要安装 npm，确保安装后，进入 `./frontend` 目录，执行：
+
+    ```bash
+    npm run build
+    npm run start
+    ```
+
+    即可在 `localhost:7842` 看到前端页面。
+
+3. 部署 backend
+
+    部署后端需要 JRE 21 环境 以及 maven，进入 `./backend` 目录，执行：
+    ```bash
+    mvn clean package
+    java -jar ./target/backend-1.0.0.jar
+    ```
+    即可在 `localhost:6780` 启动后端服务。
+
+4. 部署评测节点 evaluator
+
+    部署评测节点前需要先部署 Rabbit MQ，具体方法详见 [Installing RabbitMQ](https://www.rabbitmq.com/docs/download) 官方文档。
+
+    此外，还需准备 uv 用于管理 python 包。准备完成后，进入 `./evaluator` 目录，执行：
+    ```bash
+    uv sync
+    uv run ./src/main/main.py
+    ```
+    即可启动一个评估节点。值得注意的是，评估节点可以同时启动多个，支持节点自动负载均衡。
+
 
 ---
 
-## 配置文件
+## 🧾 数据目录
+> 首次启动后端时，会在环境变量 `NEXUS_DATA` 值所在目录下生成 `./data` 目录，结构如下：
+```dtp
+data/
+├── ground_truth
+├── log
+│   ├── backend
+│   │   ├── 2026-03-29-0.log
+│   │   ├── 2026-03-30-0.log
+│   │   └── 2026-03-31-0.log
+│   └── evaluator
+│       └── evaluator.log
+├── submission
+│   ├── Alice
+│   │   ├── 189385ba-ab19-408f-b519-932c48eafcfc.csv
+│   │   └── 3445d9de-2ee3-41bc-9d3d-2f42bff16af7.csv
+│   ├── jusus
+│   │   └── cb20f6c3-23f8-4d5d-acc4-e15dee1fa7ef.csv
+│   ├── Milk
+│   │   └── 91f215cd-79f1-4125-a8de-beff8c474efe.csv
+│   └── test
+│       ├── 1022ba5c-3816-45b8-a8dd-0c6dc3bafe4a.csv
+│       ├── 382daaac-a614-419b-81dc-742c03a18ad4.csv
+│       ├── 425394cf-b1f5-42c7-9f93-fe503c920f09.csv
+│       ├── 89eb80ba-a19e-4b40-a9db-2f7a64998058.csv
+│       ├── b5f8f378-1807-4eea-882f-1a94829031f3.csv
+│       └── ef500966-c653-4f5d-846a-c0423ae02914.csv
+├── config.json
+└── data.db
+```
 
-使用 `config.json` 配置文件存储服务端配置。
+---
+
+## ⚙️ 配置文件
+
+Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 ```json
 {
-  "leaderboardRefreshRate": 3600,   // 单位：s（秒）
+  "leaderboardRefreshRate": 3600,   // 排行榜刷新间隔，单位：s（秒）
   "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
   "isLeaderboardEnabled": true   // 排行榜是否开启
 }
 ```
 
----
-
-## 页面路由设计
-
-```text
-root/
-├── leaderboard
-├── submit
-└── admin
-```
+> [!NOTE]
+> 配置文件更改后，需要重启后端服务才能生效。
 
 ---
 
-## API 接口设计
-
-AiRankingSystem 在 `/api` 路径下提供 REST API。除登录/注册外，所有端点都需要 JWT 认证。
-
-**基础 URL：** `http://your-host:6780/api`
-
-**认证：** 将 JWT 令牌作为 `Authorization: Bearer <token>` 请求头传入。
-
----
-
-### 响应
-> 所有 api 响应均为统一格式
-```json
-{
-  "code": 1,
-  "message": "",
-  "data": {}
-}
-```
-* "code": 1（成功） 或 0（失败）
-* "message": 成功信息 或 失败原因
-* "data": 如果响应有数据，均放置在该字段
+## 🛠️ 技术栈
+> 本项目为全栈平台极项目，使用技术栈如下：
+* Java Spring Boot
+* Spring Data JPA
+* Spring Security
+* Next.js
+* Tailwind CSS
+* Shadcn UI
+* Rabbit MQ
+* Docker
+* Python
 
 ---
 
-### 认证
+## 📜 Changelog
 
-#### 1. 登录
+> 📌 此处只列出最新版本，更早版本详见 `CHANGELOG.md`。
 
-```
-POST /auth/login
-```
+### [1.0.0] - 2026-03-31
 
-使用用户名和密码进行认证。
+### 🌟 初始版本
+- 实现了打榜系统的基本功能。
 
-**请求体：**
-```json
-{
-  "username": "string",
-  "password": "string"
-}
-```
+### 🆕 新增
+- 新增用户注册、登录功能。
+- 新增提交 `.csv` 功能。
+- 新增自动计算排行榜功能、定时刷新排行榜功能。
+- 新增自动评估脚本，使用消息队列异步通信。
 
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": {
-            "token": "<token>"
-        },
-      "msg": "登录成功~"
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "用户名或密码无效。"
-    }
-    ```
+### 🛠 修复
+- 修复了前端导航栏遮挡画面内容的 bug。
 
 ---
 
-#### 2. 注册
-
-```
-POST /auth/register
-```
-
-使用用户名和密码进行注册。
-
-**请求体：**
-```json
-{
-  "username": "string",
-  "password": "string"
-}
-```
-
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": {
-            "token": "<token>"
-        },
-      "msg": "注册成功~"
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "用户名已存在。"
-    }
-    ```
+## 📞 联系方式
+> 如果你需要帮助，或有部署、商业合作等需求，欢迎联系我。
+### 📧 Email: unimilk891@gmail.com
+### 🌐 GitHub: [X-xiaohan521](https://github.com/X-xiaohan521/)
 
 ---
 
-#### 3. 刷新令牌
-
-```
-GET /auth/refreshToken
-```
-
-刷新当前的认证令牌。
-
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": {
-            "token": "<newToken>"
-        },
-      "msg": "令牌已刷新。"
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "令牌无效，请重新登录。"
-    }
-    ```
-
----
-
-#### 4. 登出
-
-```
-GET /auth/logout
-```
-
-清除认证令牌并登出。
-
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": null,
-      "msg": "登出成功。"
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "用户未登录。"
-    }
-    ```
-
----
-
-### 用户
-#### 1. 获取当前用户信息
-
-```
-GET /user/me
-```
-
-根据所携带 token 返回用户信息。
-
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": {
-        "username": "<username>",
-        "role": 0
-      },
-      "msg": ""
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "令牌无效，请重新登录。"
-    }
-    ```
-
----
-
-### 提交
-#### 1. 获取当前用户所有提交记录
-
-```
-GET /submission
-```
-
-根据所携带 token 返回用户所有提交记录（按照提交时间升序排列）。
-
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": [
-        {"status": 1, "score": 83, "submissionTime": "2026-03-15 22:30"},
-        {"status": 0, "score": null, "submissionTime": "2026-03-16 09:24"},
-        {"status": 2, "score": null, "submissionTime": "2026-03-17 14:17"}
-      ],
-      "msg": ""
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "令牌无效，请重新登录。"
-    }
-    ```
-
-#### 2. 上传一次提交
-
-```
-POST /submission
-```
-
-请求体格式：multipart/form-data
-
-仅允许上传规定的 submission 文件格式。
-
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": null,
-      "msg": ""
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "文件不符合要求，请重新提交。"
-    }
-    ```
-
----
-
-### 排行榜
-#### 1. 获取当前排行榜
-
-```
-GET /leaderboard
-```
-
-允许携带参数：`/leaderboard?page=1&pageSize=10`
-
-排行榜分页查询，按照分数由高到低排列。
-
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": [
-        {"rank": 1, "username": "Milk", "score": 91, "submissionTime": "2026-03-17 14:17"},
-        {"rank": 2, "username": "John", "score": 90, "submissionTime": "2026-03-16 15:17"}
-      ],
-      "msg": ""
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "你没有权限这么做。"
-    }
-    ```
-
----
-
-### 管理接口
-> 以下接口均只允许管理员访问，需携带管理员用户的 token 访问。
-
-#### 1. 获取所有提交记录
-
-```
-GET /admin/submission
-```
-
-允许携带参数：`/admin/submission?page=1&pageSize=10`
-
-所有提交记录分页查询，按照提交时间倒序排列。
-
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": [
-        {"id": 3, "username": "John", "status": 1, "score": 81, "submissionTime": "2026-03-17 14:17"},
-        {"id": 2, "username": "Alice", "status": 0, "score": null, "submissionTime": "2026-03-16 09:24"},
-        {"id": 1, "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30"}
-      ],
-      "msg": ""
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "你没有权限这么做。"
-    }
-    ```
-    
----
-
-#### 2. 获取当前配置
-
-```
-GET /admin/config
-```
-
-获取当前系统配置信息。
-
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": {
-        "leaderboardRefreshRate": 3600,   // 单位：s（秒）
-        "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
-        "isLeaderboardEnabled": true   // 排行榜是否开启
-      },
-      "msg": ""
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "你没有权限这么做。"
-    }
-    ```
-
----
-
-#### 3. 修改当前配置
-
-```
-PUT /admin/config
-```
-
-请求体格式：application/json
-
-请求体：
-
-```json
-{
-  "leaderboardRefreshRate": 3600,   // 单位：s（秒）
-  "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
-  "isLeaderboardEnabled": true   // 排行榜是否开启
-}
-```
-
-> 可以仅传递需要修改的字段，留空的配置将不会修改。
-
----
-
-#### 4. 上传正确答案
-
-```
-POST /admin/answer
-```
-
-请求体格式：multipart/form-data
-
-仅允许上传规定的 submission 文件格式，先前的答案不会被覆盖。
-
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": null,
-      "msg": ""
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "文件不符合要求，请重新提交。"
-    }
-    ```
+## 📌 结语
+### 感谢使用 Nexus！如果你觉得这个平台好用，请 Star ⭐ 这个 GitHub 项目，或在评论区留言反馈！🚀
