@@ -17,7 +17,7 @@
     <!-- File logging -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <FileNamePattern>${NEXUS_DATA}/log/%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+            <FileNamePattern>${NEXUS_DATA}/log/backend/%d{yyyy-MM-dd}-%i.log</FileNamePattern>
             <MaxHistory>30</MaxHistory>
             <maxFileSize>10MB</maxFileSize>
         </rollingPolicy>
