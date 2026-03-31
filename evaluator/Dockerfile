@@ -1,8 +1,12 @@
-FROM ghcr.io/astral-sh/uv:debian AS builder
+FROM ghcr.io/astral-sh/uv:0.5 AS uv-installer
+FROM python:3.12-slim AS builder
+
+COPY --from=uv-installer /uv /usr/local/bin/uv
 
 WORKDIR /build
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
+ENV UV_DEFAULT_INDEX="https://pypi.tuna.tsinghua.edu.cn/simple/"
 
 # Install dependencies (cached layer)
 COPY pyproject.toml uv.lock ./
@@ -11,7 +15,7 @@ RUN uv sync --frozen --no-dev
 # Copy application source
 COPY src ./src
 
-FROM python:3.12 AS runtime
+FROM python:3.12-slim AS runtime
 
 ENV LANG="C.UTF-8" \
     TZ=Asia/Shanghai \
