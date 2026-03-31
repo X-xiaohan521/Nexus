@@ -6,5 +6,6 @@ public record SubmissionDto(
         Integer id,
         Integer status,
         Float score,
-        LocalDateTime submissionTime
+        LocalDateTime submissionTime,
+        String errMsg
 ) {}

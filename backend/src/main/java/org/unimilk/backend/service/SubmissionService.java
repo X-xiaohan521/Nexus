@@ -50,7 +50,7 @@ public class SubmissionService {
         List<Submission> submissions = submissionRepo.findByUserIdOrderBySubmissionTimeDesc(userId);
         AtomicInteger id = new AtomicInteger(submissions.size());
         return submissions.stream()
-                .map(submission -> new SubmissionDto(id.getAndDecrement(), submission.getStatus(), submission.getScore(), submission.getSubmissionTime()))
+                .map(submission -> new SubmissionDto(id.getAndDecrement(), submission.getStatus(), submission.getScore(), submission.getSubmissionTime(), submission.getErrMsg()))
                 .toList();
     }
 

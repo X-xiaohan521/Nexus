@@ -5,20 +5,37 @@ import { Button } from "@/components/ui/button"
 import { ArrowUpDown, CircleCheck, CircleX, Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Spinner } from "@/components/ui/spinner"
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 export type SubmissionCell = {
     id: number
     status: 0 | 1 | 2 | 3
     score: number | null
     submissionTime: string
+    errMsg: string
 }
 
-function FailedBadge() {
+function FailedBadge({errMsg}: {errMsg: string}) {
     return (
-        <Badge variant="destructive">
-            <CircleX data-icon="inline-start" />
-            失败
-        </Badge>
+        <HoverCard openDelay={10} closeDelay={100}>
+            <HoverCardTrigger asChild>
+                <Badge variant="destructive" className="cursor-help">
+                    <CircleX data-icon="inline-start" />
+                    失败
+                </Badge>
+            </HoverCardTrigger>
+            <HoverCardContent className="flex w-64 flex-col gap-0.5">
+                <div className="font-semibold text-destructive">失败原因</div>
+                <div>{ errMsg }</div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                    2026 © Nexus
+                </div>
+            </HoverCardContent>
+        </HoverCard>
     )
 }
 
@@ -62,7 +79,7 @@ export const columns: ColumnDef<SubmissionCell>[] = [
         cell: ({ row }) => {
             return (
                 <div className="flex justify-center w-10">
-                    <p>{ row.getValue("id") }</p>
+                    <p>{row.getValue("id")}</p>
                 </div>
             )
         }
@@ -74,7 +91,7 @@ export const columns: ColumnDef<SubmissionCell>[] = [
             const s = row.getValue("status")
             switch (s) {
                 case 0:
-                    return <FailedBadge />
+                    return <FailedBadge errMsg={row.getValue("errMsg")} />
                 case 1:
                     return <SuccessBadge />
                 case 2:
@@ -106,4 +123,13 @@ export const columns: ColumnDef<SubmissionCell>[] = [
             )
         },
     },
+    {
+        accessorKey: "errMsg",
+        header: () => {
+            return
+        },
+        cell: () => {
+            return
+        }
+    }
 ]

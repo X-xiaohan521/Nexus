@@ -214,9 +214,9 @@ GET /submission
     {
       "code": 1,
       "data": [
-        {"id": 3, "status": 2, "score": null, "submissionTime": "2026-03-17 14:17"},
-        {"id": 2, "status": 0, "score": null, "submissionTime": "2026-03-16 09:24"},
-        {"id": 1, "status": 1, "score": 83, "submissionTime": "2026-03-15 22:30"}
+        {"id": 3, "status": 3, "score": null, "submissionTime": "2026-03-17 14:17", "errMsg": null},
+        {"id": 2, "status": 0, "score": null, "submissionTime": "2026-03-16 09:24", "errMsg": "文档格式有误"},
+        {"id": 1, "status": 1, "score": 83, "submissionTime": "2026-03-15 22:30", "errMsg": null}
       ],
       "msg": ""
     }
