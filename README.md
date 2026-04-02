@@ -128,9 +128,9 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 ```json
 {
-  "leaderboardRefreshRate": 3600,   // 排行榜刷新间隔，单位：s（秒）
-  "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
-  "isLeaderboardEnabled": true   // 排行榜是否开启
+    "leaderboardRefreshRate": 3600,   // 单位：s（秒）
+    "groundTruth": "./ground_truth",   // ground_truth 路径
+    "isLeaderboardEnabled": true   // 排行榜是否开启
 }
 ```
 

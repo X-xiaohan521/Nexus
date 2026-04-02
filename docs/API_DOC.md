@@ -316,9 +316,9 @@ GET /admin/submission
     {
       "code": 1,
       "data": [
-        {"id": 3, "username": "John", "status": 1, "score": 81, "submissionTime": "2026-03-17 14:17"},
-        {"id": 2, "username": "Alice", "status": 0, "score": null, "submissionTime": "2026-03-16 09:24"},
-        {"id": 1, "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30"}
+        {"id": 3, "username": "John", "status": 1, "score": 81, "submissionTime": "2026-03-17 14:17", "errMsg": null},
+        {"id": 2, "username": "Alice", "status": 0, "score": null, "submissionTime": "2026-03-16 09:24", "errMsg": "文档格式有误"},
+        {"id": 1, "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30", "errMsg": null}
       ],
       "msg": ""
     }
@@ -340,7 +340,7 @@ GET /admin/submission
 GET /admin/config
 ```
 
-获取当前系统配置信息。
+获取当前系统配置信息，注意这会同时使后端重新加载 `config.json`。
 
 * 成功
     ```json
@@ -348,7 +348,7 @@ GET /admin/config
       "code": 1,
       "data": {
         "leaderboardRefreshRate": 3600,   // 单位：s（秒）
-        "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
+        "groundTruth": "./ground_truth/A_test",   // ground_truth 路径
         "isLeaderboardEnabled": true   // 排行榜是否开启
       },
       "msg": ""
@@ -377,33 +377,24 @@ PUT /admin/config
 
 ```json
 {
-  "leaderboardRefreshRate": 3600,   // 单位：s（秒）
-  "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
-  "isLeaderboardEnabled": true   // 排行榜是否开启
+  "leaderboardRefreshRate": 300,
+  "groundTruth": "./ground_truth/B_test",
+  "isLeaderboardEnabled": true
 }
 ```
 
 > 可以仅传递需要修改的字段，留空的配置将不会修改。
 
----
-
-### 4. 上传正确答案
-
-```
-POST /admin/answer
-```
-
-请求体格式：multipart/form-data
-
-仅允许上传规定的 submission 文件格式，先前的答案不会被覆盖。
-
-**响应：**
 * 成功
     ```json
     {
       "code": 1,
-      "data": null,
-      "msg": ""
+      "data": {
+        "leaderboardRefreshRate": 300,
+        "groundTruth": "./ground_truth/B_test",   
+        "isLeaderboardEnabled": true
+      },
+      "msg": "修改成功~"
     }
     ```
 * 失败
@@ -411,6 +402,8 @@ POST /admin/answer
     {
       "code": 0,
       "data": null,
-      "msg": "文件不符合要求，请重新提交。"
+      "msg": "你没有权限这么做。"
     }
     ```
+
+---
