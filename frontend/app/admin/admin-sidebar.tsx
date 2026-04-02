@@ -47,7 +47,7 @@ export function AdminSidebar({
                     <SidebarGroupLabel>管理</SidebarGroupLabel>
                     <SidebarMenu>
                         {projects.map((item) => (
-                            <SidebarMenuItem className="rounded-md hover:bg-accent transition-transform cursor-pointer" key="settings">
+                            <SidebarMenuItem className="rounded-md hover:bg-accent transition-transform cursor-pointer" key={item.name}>
                                 <SidebarMenuButton asChild onClick={() => { router.push(item.url) }}>
                                     <a>
                                         <item.icon />
