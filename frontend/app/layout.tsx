@@ -1,6 +1,7 @@
+// @ts-expect-error
+import "./globals.css"
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { TopBar } from "./navbar";
 import { ThemeProvider, useTheme } from "next-themes";
 import { UserProvider } from "@/context/user-context";

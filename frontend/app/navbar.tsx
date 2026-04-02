@@ -64,7 +64,7 @@ export function TopBar() {
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                <Link href="/admin">管理后台</Link>
+                <Link href="/admin/settings">管理后台</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
