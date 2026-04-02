@@ -45,7 +45,51 @@
 `docker-compose.yml` 示例：
 
 ```yml
-
+services:
+  backend:
+    image: unimilk/nexus:backend-1.0.0
+    ports:
+      - "6780:6780"
+    volumes:
+      - /data/nexus:/app/data
+    environment:
+      TZ: Asia/Shanghai
+      JWT_SECRET: <生成你自己的 JWT_SECRET>
+      NEXUS_DATA: /app/data
+      NEXUS_CAPTCHA_ID: <你的极验 CAPTCHA_ID>
+      NEXUS_CAPTCHA_KEY: <你的极验 CAPTCHA_KEY>
+      NEXUS_MQ_HOST: rabbit
+    depends_on:
+      - rabbit-mq
+  frontend:
+    image: unimilk/nexus:frontend-1.0.0
+    ports:
+      - "7842:7842"
+    environment:
+      TZ: Asia/Shanghai
+      NEXUS_BACKEND_HOST: backend
+    depends_on:
+      - backend
+  evaluator:
+    image: unimilk/nexus:evaluator-1.0.0
+    volumes:
+      - /data/nexus:/app/data
+    environment:
+      TZ: Asia/Shanghai
+      NEXUS_DATA: /app/data
+      NEXUS_BACKEND_HOST: backend
+      NEXUS_MQ_HOST: rabbit
+    depends_on:
+      - rabbit-mq
+      - backend
+  rabbit-mq:
+    image: rabbitmq:4-management
+    hostname: rabbit
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "15672:15672"
+      - "5672:5672"
 ```
 
 ### 📦 Build from soure
