@@ -16,6 +16,7 @@ import org.unimilk.backend.settings.SettingsManager;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -58,7 +59,12 @@ public class LeaderboardService {
                 .sorted((leader1, leader2) -> leader2.getHighestScore().compareTo(leader1.getHighestScore()))
                 .toList();
         int rank = 1;
-        leaders.getFirst().setRank(rank);
+        try {
+            leaders.getFirst().setRank(rank);
+        } catch (NoSuchElementException e) {
+            log.info("Leaderboard is empty, skip calculating.");
+            return;
+        }
         for (int i = 1; i < leaders.size(); i++) {
             if (!leaders.get(i).getHighestScore().equals(leaders.get(i - 1).getHighestScore())) {
                 rank = i + 1;
