@@ -18,7 +18,7 @@ export default function AdminLayout({
             <div className="flex flex-col items-center mx-auto h-full lg:w-250 md:w-150 sm:w-80">
                 <TooltipProvider>
                     <SidebarProvider>
-                        <AdminSidebar className="flex flex-1 relative w-50" />
+                        <AdminSidebar className="flex flex-1 relative" />
                         <SidebarInset>
                             {children}
                         </SidebarInset>
