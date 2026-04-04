@@ -16,7 +16,7 @@ export type SubmissionCell = {
     status: 0 | 1 | 2 | 3
     score: number | null
     submissionTime: string
-    errMsg: string
+    errMsg: string | null
 }
 
 function FailedBadge({errMsg}: {errMsg: string}) {
