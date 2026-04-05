@@ -12,8 +12,8 @@ import { DatePickerWithRange } from "./date-picker-range";
 
 export default function () {
     return (
-        <div className="space-y-2">
-            <h1 className="font-bold px-2 text-lg">提交记录</h1>
+        <div className="space-y-2 py-2">
+            <h1 className="font-bold px-2 text-xl">提交记录</h1>
             <div className="flex justify-between px-2">
                 <InputGroup className="max-w-xs">
                     <InputGroupInput placeholder="搜索用户..." />

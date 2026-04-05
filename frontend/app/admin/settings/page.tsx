@@ -25,7 +25,8 @@ import {
 export type Settings = {
     leaderboardRefreshRate: number,   // 单位：s（秒）
     groundTruth: string,   // ground_truth 路径
-    isLeaderboardEnabled: boolean   // 排行榜是否开启
+    isLeaderboardEnabled: boolean,   // 排行榜是否开启
+    isRegisterEnabled: boolean
 }
 
 export type gtChoice = [string]
@@ -33,7 +34,8 @@ export type gtChoice = [string]
 export const defaultSettings = {
     leaderboardRefreshRate: 3600,
     groundTruth: "./ground_truth/A_test",
-    isLeaderboardEnabled: true
+    isLeaderboardEnabled: true,
+    isRegisterEnabled: true
 }
 
 export const defaultGtChoice = [
@@ -44,12 +46,12 @@ export const defaultGtChoice = [
 export default function () {
     const settings = defaultSettings
     return (
-        <div className="flex justify-center">
-            <div className="w-120">
+        <div className="w-full grid grid-cols-2 p-2 space-x-4">
+            <div className="">
                 <form>
                     <FieldGroup className="gap-4">
                         <FieldSet>
-                            <FieldLegend>系统设置</FieldLegend>
+                            <FieldLegend><h1 className="text-xl font-bold">系统设置</h1></FieldLegend>
                             <FieldDescription>
                                 所有系统设置将在保存后立即生效。
                             </FieldDescription>
@@ -104,16 +106,56 @@ export default function () {
                             </Select>
                         </FieldSet>
                         <FieldSeparator />
-                        <Field orientation="horizontal" className="flex flex-col items-end">
-                            <div className="space-x-2">
-                                <Button>保存设置</Button>
-                                <Button variant="outline" type="button">
-                                    取消
-                                </Button>
-                            </div>
-                        </Field>
                     </FieldGroup>
                 </form>
+            </div>
+            <div>
+                <FieldSet>
+                    <FieldLegend>用户设置</FieldLegend>
+                    <FieldDescription>
+                        设置用户账号权限。
+                    </FieldDescription>
+                    <FieldGroup>
+                        <FieldLabel>
+                            <Field orientation="horizontal">
+                                <Checkbox id="toggle-register" name="toggle-register" defaultChecked={settings.isRegisterEnabled} />
+                                <FieldContent>
+                                    <FieldTitle>启用用户注册</FieldTitle>
+                                    <FieldDescription>
+                                        当该选项关闭时，新用户将无法注册。
+                                    </FieldDescription>
+                                </FieldContent>
+                            </Field>
+                        </FieldLabel>
+                        <FieldLabel>
+                            <Field orientation="vertical">
+                                <FieldTitle>新用户默认权限</FieldTitle>
+                                <Select>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder={settings.groundTruth} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>默认权限</SelectLabel>
+                                            <SelectItem value="allow-submit">允许提交并参与排行榜</SelectItem>
+                                            <SelectItem value="prohibit-submit">不允许提交</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+                        </FieldLabel>
+
+                    </FieldGroup>
+                    <FieldSeparator />
+                    <Field orientation="horizontal" className="flex flex-col items-end">
+                        <div className="space-x-2">
+                            <Button>保存设置</Button>
+                            <Button variant="outline" type="button">
+                                取消
+                            </Button>
+                        </div>
+                    </Field>
+                </FieldSet>
             </div>
         </div>
     )
