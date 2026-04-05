@@ -349,7 +349,8 @@ GET /admin/config
       "data": {
         "leaderboardRefreshRate": 3600,   // 单位：s（秒）
         "groundTruth": "./ground_truth/A_test",   // ground_truth 路径
-        "isLeaderboardEnabled": true   // 排行榜是否开启
+        "isLeaderboardEnabled": true,   // 排行榜是否开启
+        "availableGroundTruths": ["./ground_truth/A_test", "./ground_truth/B_test"]   // 可用的 ground_truth 路径
       },
       "msg": ""
     }
