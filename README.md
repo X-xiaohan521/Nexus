@@ -4,7 +4,7 @@
 
 ## 📋 概览 Overview
 
-* **当前版本**：v1.0.1
+* **当前版本**：v1.0.2
 * **Web-UI 默认端口**：7842
 * **建议使用 Docker 部署**
 
@@ -47,7 +47,7 @@
 ```yml
 services:
   backend:
-    image: unimilk/nexus:backend-1.0.1
+    image: unimilk/nexus:backend-1.0.2
     ports:
       - "6780:6780"
     volumes:
@@ -62,7 +62,7 @@ services:
     depends_on:
       - rabbit-mq
   frontend:
-    image: unimilk/nexus:frontend-1.0.1
+    image: unimilk/nexus:frontend-1.0.2
     ports:
       - "7842:7842"
     environment:
@@ -71,7 +71,7 @@ services:
     depends_on:
       - backend
   evaluator:
-    image: unimilk/nexus:evaluator-1.0.1
+    image: unimilk/nexus:evaluator-1.0.2
     volumes:
       - /data/nexus:/app/data
     environment:
@@ -115,7 +115,7 @@ services:
     部署后端需要 JRE 21 环境 以及 maven，进入 `./backend` 目录，执行：
     ```bash
     mvn clean package
-    java -jar ./target/backend-1.0.0.jar
+    java -jar ./target/backend-1.0.2.jar
     ```
     即可在 `localhost:6780` 启动后端服务。
 
@@ -173,7 +173,7 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 ```json
 {
   "leaderboardRefreshRate": 3600,   // 排行榜刷新间隔，单位：s（秒）
-  "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
+  "groundTruth": "./ground_truth/A_test",   // 标准答案路径
   "isLeaderboardEnabled": true   // 排行榜是否开启
 }
 ```
@@ -201,15 +201,13 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 > 📌 此处只列出最新版本，更早版本详见 `CHANGELOG.md`。
 
-### [1.0.1] - 2026-04-06
+### [1.0.2] - 2026-04-06
 
 ### 🌟 优化
-- 在 `README.md` 中添加 `docker-compose.yml` 示例。
+- 
 
 ### 🛠 修复
-- 修复了首次启动时无法自动创建 `ground_truth` 文件夹 和 `config.json` 文件的问题 (issue #6)
-- 修复了排行榜为空的时候执行 refresh 报错的问题 (issue #6)
-- 修复了服务器启动后，修改 `config.json` 再重启，修改会被覆盖的问题 (issue #6)
+- 修复 `README.md` 中错误的版本号 和 `config.json` 字段。
 
 ---
 
