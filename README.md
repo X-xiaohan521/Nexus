@@ -47,7 +47,7 @@
 ```yml
 services:
   backend:
-    image: unimilk/nexus:backend-1.0.0
+    image: unimilk/nexus:backend-1.0.1
     ports:
       - "6780:6780"
     volumes:
@@ -62,7 +62,7 @@ services:
     depends_on:
       - rabbit-mq
   frontend:
-    image: unimilk/nexus:frontend-1.0.0
+    image: unimilk/nexus:frontend-1.0.1
     ports:
       - "7842:7842"
     environment:
@@ -71,7 +71,7 @@ services:
     depends_on:
       - backend
   evaluator:
-    image: unimilk/nexus:evaluator-1.0.0
+    image: unimilk/nexus:evaluator-1.0.1
     volumes:
       - /data/nexus:/app/data
     environment:
@@ -201,19 +201,15 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 > 📌 此处只列出最新版本，更早版本详见 `CHANGELOG.md`。
 
-### [1.0.0] - 2026-03-31
+### [1.0.1] - 2026-04-06
 
-### 🌟 初始版本
-- 实现了打榜系统的基本功能。
-
-### 🆕 新增
-- 新增用户注册、登录功能。
-- 新增提交 `.csv` 功能。
-- 新增自动计算排行榜功能、定时刷新排行榜功能。
-- 新增自动评估脚本，使用消息队列异步通信。
+### 🌟 优化
+- 在 `README.md` 中添加 `docker-compose.yml` 示例。
 
 ### 🛠 修复
-- 修复了前端导航栏遮挡画面内容的 bug。
+- 修复了首次启动时无法自动创建 `ground_truth` 文件夹 和 `config.json` 文件的问题 (issue #6)
+- 修复了排行榜为空的时候执行 refresh 报错的问题 (issue #6)
+- 修复了服务器启动后，修改 `config.json` 再重启，修改会被覆盖的问题 (issue #6)
 
 ---
 
