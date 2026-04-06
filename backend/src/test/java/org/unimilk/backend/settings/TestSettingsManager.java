@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest
 public class TestSettingsManager {
@@ -78,5 +80,19 @@ public class TestSettingsManager {
         settingsManager.applyAndSaveSettingsFrom(settings);
         Settings newSettings = settingsManager.getSettings();
         assertEquals(settings, newSettings);
+    }
+
+    @Test
+    void saveDefaultConfigShouldWorkWhenNoConfigFileIsFound() {
+        File configFile = new File(Path.of(dataDir, "config.json").toUri());
+        if (configFile.exists()) {
+            boolean isDeleted = configFile.delete();
+            if (!isDeleted) {
+                fail();
+            }
+        }
+        settingsManager.refreshSettings();
+        Settings settings = settingsManager.getSettings();
+        assertEquals(new Settings(), settings);
     }
 }

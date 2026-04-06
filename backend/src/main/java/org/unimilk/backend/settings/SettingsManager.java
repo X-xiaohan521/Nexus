@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,7 +46,8 @@ public class SettingsManager {
             jsonStr = sb.toString();
         } catch (IOException e) {
             this.settings = new Settings();
-            log.error("Failed to load config.json, using default settings.", e);
+            saveSettings();
+            log.warn("Failed to find config.json, overwritten with default.");
             return;
         }
         try {
@@ -56,15 +58,23 @@ public class SettingsManager {
         } catch (JsonSyntaxException e) {
             this.settings = new Settings();
             saveSettings();
-            log.error("Config.json syntax error, overwritten with default.", e);
+            log.warn("Config.json syntax error, overwritten with default.");
         }
     }
 
-    @PreDestroy
     private synchronized void saveSettings() {
-        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(dataDir, "config.json"))) {
+        File configFile = new File(Path.of(dataDir, "config.json").toUri());
+        try {
+            boolean isConfigGenerated = configFile.createNewFile();
+            if (isConfigGenerated) {
+                log.info("New config.json created.");
+            }
             String jsonStr = gson.toJson(this.settings);
-            writer.write(jsonStr);
+            try (BufferedWriter writer = Files.newBufferedWriter(configFile.toPath())) {
+                writer.write(jsonStr);
+            } catch (IOException e) {
+                log.error("Failed to write to config.json, please check your system access permission.", e);
+            }
         } catch (IOException e) {
             log.error("Failed to save config.json, please check your system access permission.", e);
         }
