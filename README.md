@@ -128,14 +128,16 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 ```json
 {
-    "leaderboardRefreshRate": 3600,   // 单位：s（秒）
-    "groundTruth": "./ground_truth",   // ground_truth 路径
-    "isLeaderboardEnabled": true   // 排行榜是否开启
+    "leaderboardRefreshRate": 3600,   // 排行榜刷新率，单位：s（秒）
+    "groundTruth": "./ground_truth/A_test",   // ground_truth 路径
+    "isLeaderboardEnabled": true,   // 排行榜是否开启
+    "allowRegistration": true,   // 是否允许新用户注册
+    "defaultAllowSubmit": 1   // 是否默认允许新用户提交
 }
 ```
 
 > [!NOTE]
-> 配置文件更改后，需要重启后端服务才能生效。
+> 手动修改配置文件后，需要重启后端服务才能生效。
 
 ---
 
