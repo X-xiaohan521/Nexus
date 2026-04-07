@@ -1,10 +1,11 @@
 "use client"
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { Check, MoreHorizontal, ShieldUser, X } from "lucide-react"
+import { Check, MoreHorizontal, ShieldUser, User, X } from "lucide-react"
 
 export type UserCell = {
     id: number,
@@ -14,9 +15,9 @@ export type UserCell = {
 }
 
 export const mockData: UserCell[] = [
-    {"id": 1, "username": "Milk", "role": 1, "allowSubmit": 1},
-    {"id": 2, "username": "John", "role": 0, "allowSubmit": 0},
-    {"id": 3, "username": "Jessica", "role": 0, "allowSubmit": 1}
+    { "id": 1, "username": "Milk", "role": 1, "allowSubmit": 1 },
+    { "id": 2, "username": "John", "role": 0, "allowSubmit": 0 },
+    { "id": 3, "username": "Jessica", "role": 0, "allowSubmit": 1 }
 ]
 
 function AdminBadge() {
@@ -31,6 +32,7 @@ function AdminBadge() {
 function UserBadge() {
     return (
         <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+            <User data-icon="inline-start" />
             默认
         </Badge>
     )
@@ -106,7 +108,7 @@ export const columns: ColumnDef<UserCell>[] = [
         accessorKey: "actions",
         header: ({ column }) => {
             return (
-                <div className="w-8"></div>
+                <div className="w-8 text-right">更多操作</div>
             )
         },
         cell: ({ row }) => {
@@ -127,9 +129,25 @@ export const columns: ColumnDef<UserCell>[] = [
                                 禁止提交
                             </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem variant="destructive">
-                            删除用户
-                        </DropdownMenuItem>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <DropdownMenuItem variant="destructive" onSelect={(e) => e.preventDefault()}>
+                                    删除用户
+                                </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>确认要删除用户 { row.getValue("username") } 吗？</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        这个操作无法撤销，将从服务器上彻底移除该用户。
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>取消</AlertDialogCancel>
+                                    <AlertDialogAction variant="destructive">删除</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )
