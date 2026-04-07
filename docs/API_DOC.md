@@ -350,7 +350,9 @@ GET /admin/config
         "leaderboardRefreshRate": 3600,   // 单位：s（秒）
         "groundTruth": "./ground_truth/A_test",   // ground_truth 路径
         "isLeaderboardEnabled": true,   // 排行榜是否开启
-        "availableGroundTruths": ["./ground_truth/A_test", "./ground_truth/B_test"]   // 可用的 ground_truth 路径
+        "availableGroundTruths": ["./ground_truth/A_test", "./ground_truth/B_test"],   // 可用的 ground_truth 路径
+        "allowRegistration": true,   // 是否允许新用户注册
+        "defaultAllowSubmit": 1   // 是否默认允许新用户提交
       },
       "msg": ""
     }
@@ -395,7 +397,7 @@ PUT /admin/config
         "groundTruth": "./ground_truth/B_test",   
         "isLeaderboardEnabled": true
       },
-      "msg": "修改成功~"
+      "msg": "配置保存成功~"
     }
     ```
 * 失败
@@ -422,9 +424,73 @@ GET /admin/users
     {
       "code": 1,
       "data": [
-        {}
+        {"id": 1, "username": "Milk", "role": 1, "allowSubmit": 1},
+        {"id": 2, "username": "John", "role": 0, "allowSubmit": 0},
+        {"id": 3, "username": "Jessica", "role": 0, "allowSubmit": 1}
       ],
       "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+---
+
+### 5. 修改用户信息
+
+```
+PUT /admin/users/{$id}
+```
+
+修改 id 为 {$id} 的用户信息。
+
+请求体：
+
+```json
+{
+  "allowSubmit": 0
+}
+```
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": null,
+      "msg": "修改成功~"
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+---
+
+### 6. 删除用户
+
+```
+DELETE /admin/users/{$id}
+```
+
+删除 id 为 {$id} 的用户。
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": null,
+      "msg": "用户删除成功~"
     }
     ```
 * 失败
