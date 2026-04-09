@@ -1,11 +1,11 @@
 "use client"
 
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogMedia, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ColumnDef } from "@tanstack/react-table"
-import { Check, MoreHorizontal, ShieldUser, User, X } from "lucide-react"
+import { Check, MoreHorizontal, ShieldUser, Trash2Icon, User, X } from "lucide-react"
 
 export type UserCell = {
     id: number,
@@ -137,6 +137,9 @@ export const columns: ColumnDef<UserCell>[] = [
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
+                                    <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                                        <Trash2Icon />
+                                    </AlertDialogMedia>
                                     <AlertDialogTitle>确认要删除用户 { row.getValue("username") } 吗？</AlertDialogTitle>
                                     <AlertDialogDescription>
                                         这个操作无法撤销，将从服务器上彻底移除该用户。
