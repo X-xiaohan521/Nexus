@@ -300,41 +300,12 @@ GET /leaderboard
 
 > [!IMPORTANT]
 > 以下接口均只允许管理员访问，需携带管理员用户的 token 访问。
-
-### 1. 获取所有提交记录
-
-```
-GET /admin/submission
-```
-
-允许携带参数：`/admin/submission?page=1&pageSize=10`
-
-所有提交记录分页查询，按照提交时间倒序排列。
-
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": [
-        {"id": 3, "username": "John", "status": 1, "score": 81, "submissionTime": "2026-03-17 14:17", "errMsg": null},
-        {"id": 2, "username": "Alice", "status": 0, "score": null, "submissionTime": "2026-03-16 09:24", "errMsg": "文档格式有误"},
-        {"id": 1, "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30", "errMsg": null}
-      ],
-      "msg": ""
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "你没有权限这么做。"
-    }
-    ```
     
 ---
 
-### 2. 获取当前配置
+### 1. 系统设置
+
+#### 1.1 获取当前配置
 
 ```
 GET /admin/config
@@ -366,9 +337,7 @@ GET /admin/config
     }
     ```
 
----
-
-### 3. 修改当前配置
+#### 1.2 修改当前配置
 
 ```
 PUT /admin/config
@@ -411,7 +380,69 @@ PUT /admin/config
 
 ---
 
-### 4. 获取用户列表
+### 2. 提交记录
+
+#### 2.1 获取所有提交记录
+
+```
+GET /admin/submission
+```
+
+允许携带参数：`/admin/submission?page=1&pageSize=10`
+
+所有提交记录分页查询，按照提交时间倒序排列。
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": [
+        {"id": 3, "username": "John", "status": 1, "score": 81, "submissionTime": "2026-03-17 14:17", "errMsg": null},
+        {"id": 2, "username": "Alice", "status": 0, "score": null, "submissionTime": "2026-03-16 09:24", "errMsg": "文档格式有误"},
+        {"id": 1, "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30", "errMsg": null}
+      ],
+      "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+#### 2.2 获取某提交记录的详细信息
+
+```
+GET /admin/submission/{$id}
+```
+
+查询 id 为 {$id} 的提交记录。
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": {"id": 1, "fileUri": "/submission/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv", "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30:15", "errMsg": null},
+      "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+---
+
+### 3. 用户
+
+#### 3.1 获取用户列表
 
 ```
 GET /admin/users
@@ -440,9 +471,7 @@ GET /admin/users
     }
     ```
 
----
-
-### 5. 修改用户信息
+#### 3.2 修改用户信息
 
 ```
 PUT /admin/users/{$id}
@@ -475,9 +504,7 @@ PUT /admin/users/{$id}
     }
     ```
 
----
-
-### 6. 删除用户
+#### 3.3 删除用户
 
 ```
 DELETE /admin/users/{$id}
