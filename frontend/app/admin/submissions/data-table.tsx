@@ -29,6 +29,8 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer"
+import { SubmissionDetailDrawer } from "./drawer"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -82,9 +84,14 @@ export function DataTable<TData, TValue>({
                                     data-state={row.getIsSelected() && "selected"}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
+                                        <Drawer key={cell.id} direction="right">
+                                            <DrawerTrigger asChild className="cursor-pointer">
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            </DrawerTrigger>
+                                            <SubmissionDetailDrawer />
+                                        </Drawer>
                                     ))}
                                 </TableRow>
                             ))

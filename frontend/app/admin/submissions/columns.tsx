@@ -55,21 +55,10 @@ export const mockData: SubmissionCell[] = [
 
 function FailedBadge({errMsg}: {errMsg: string}) {
     return (
-        <HoverCard openDelay={10} closeDelay={100}>
-            <HoverCardTrigger asChild>
-                <Badge variant="destructive" className="cursor-help">
-                    <CircleX data-icon="inline-start" />
-                    失败
-                </Badge>
-            </HoverCardTrigger>
-            <HoverCardContent className="flex w-64 flex-col gap-0.5">
-                <div className="font-semibold text-destructive">失败原因</div>
-                <div>{ errMsg }</div>
-                <div className="mt-1 text-xs text-muted-foreground">
-                    2026 © Nexus
-                </div>
-            </HoverCardContent>
-        </HoverCard>
+        <Badge variant="destructive">
+            <CircleX data-icon="inline-start" />
+            失败
+        </Badge>
     )
 }
 
