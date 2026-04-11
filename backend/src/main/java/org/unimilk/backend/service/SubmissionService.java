@@ -56,6 +56,11 @@ public class SubmissionService {
 
     @Transactional
     public void onSubmit(Integer userId, String username, MultipartFile file, LocalDateTime submitTime) {
+        // 0. judge if submit is allowed
+        if (!settingsManager.getSettings().isLeaderboardEnabled()) {
+            throw new BusinessException("当前排行榜未开启，无法提交。", "User " + username + " failed to submit: leaderboard is closed.");
+        }
+
         // 1. validate the file
         validateFile(username, file);
 
