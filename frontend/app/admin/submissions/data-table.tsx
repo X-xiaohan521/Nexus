@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/table"
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer"
-import { SubmissionDetailDrawer } from "./drawer"
+import { SubmissionDetailDrawer } from "./submission-detail-drawer"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
