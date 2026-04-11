@@ -26,25 +26,28 @@ export type Settings = {
     leaderboardRefreshRate: number,   // 单位：s（秒）
     groundTruth: string,   // ground_truth 路径
     isLeaderboardEnabled: boolean,   // 排行榜是否开启
-    isRegisterEnabled: boolean
+    allowRegistration: boolean,   // 是否允许新用户注册
+    defaultAllowSubmit: 0 | 1   // 是否默认允许新用户提交
 }
 
-export type gtChoice = [string]
+export type GtChoice = string[]
 
-export const defaultSettings = {
+export const defaultSettings: Settings = {
     leaderboardRefreshRate: 3600,
     groundTruth: "./ground_truth/A_test",
     isLeaderboardEnabled: true,
-    isRegisterEnabled: true
+    allowRegistration: false,
+    defaultAllowSubmit: 0
 }
 
-export const defaultGtChoice = [
+export const defaultGtChoice: GtChoice = [
     "./ground_truth/A_test",
     "./ground_truth/B_test"
 ]
 
 export default function () {
-    const settings = defaultSettings
+    const settings = defaultSettings;
+    const gtChoice = defaultGtChoice;
     return (
         <div className="w-full grid grid-cols-2 p-2 space-x-4">
             <div className="">
@@ -78,7 +81,7 @@ export default function () {
                                     <Field>
                                         <FieldTitle>排行榜刷新率</FieldTitle>
                                         <InputGroup className="h-8">
-                                            <InputGroupInput placeholder={String(settings.leaderboardRefreshRate)} id="leaderboard-refresh-rate" defaultValue={settings.leaderboardRefreshRate} />
+                                            <InputGroupInput id="leaderboard-refresh-rate" defaultValue={settings.leaderboardRefreshRate} />
                                             <InputGroupAddon align="inline-end">秒</InputGroupAddon>
                                         </InputGroup>
                                     </Field>
@@ -91,14 +94,14 @@ export default function () {
                             <FieldDescription>
                                 设置用于评分的标准答案。
                             </FieldDescription>
-                            <Select>
+                            <Select defaultValue={settings.groundTruth}>
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder={settings.groundTruth} />
+                                    <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectLabel>Ground Truth</SelectLabel>
-                                        {defaultGtChoice.map((item) => (
+                                        {gtChoice.map((item) => (
                                             <SelectItem value={item}>{item}</SelectItem>
                                         ))}
                                     </SelectGroup>
@@ -118,7 +121,7 @@ export default function () {
                     <FieldGroup>
                         <FieldLabel>
                             <Field orientation="horizontal">
-                                <Checkbox id="toggle-register" name="toggle-register" defaultChecked={settings.isRegisterEnabled} />
+                                <Checkbox id="toggle-register" name="toggle-register" defaultChecked={settings.allowRegistration} />
                                 <FieldContent>
                                     <FieldTitle>启用用户注册</FieldTitle>
                                     <FieldDescription>
@@ -130,9 +133,9 @@ export default function () {
                         <FieldLabel>
                             <Field orientation="vertical">
                                 <FieldTitle>新用户默认权限</FieldTitle>
-                                <Select>
+                                <Select defaultValue={settings.defaultAllowSubmit? "allow-submit" : "prohibit-submit"}>
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder={settings.groundTruth} />
+                                        <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
