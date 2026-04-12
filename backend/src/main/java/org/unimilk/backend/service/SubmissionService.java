@@ -139,6 +139,7 @@ public class SubmissionService {
         // 2. check if the status is 3(running), else return
         if (!Objects.equals(3, submission.getStatus())) {
             log.warn("Failed to save evaluate result {}: status of submission id {} is not 3(running).", result.callbackId(), submission.getId());
+            return;
         }
 
         // 3. update status 3 -> 0(failed) / 1(success)
