@@ -31,6 +31,7 @@ import {
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer"
 import { SubmissionDetailDrawer } from "./submission-detail-drawer"
+import { SubmissionCell } from "./columns"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -90,7 +91,7 @@ export function DataTable<TData, TValue>({
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </TableCell>
                                             </DrawerTrigger>
-                                            <SubmissionDetailDrawer />
+                                            <SubmissionDetailDrawer detail={cell.getContext().row.original as SubmissionCell} />
                                         </Drawer>
                                     ))}
                                 </TableRow>

@@ -1,18 +1,12 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
 import { Copy } from "lucide-react";
+import { toast } from "sonner";
+import { SubmissionCell } from "./columns";
 
-export type SubmissionDetail = {
-    id: number,
-    username: string,
-    fileUri: string,
-    status: 0 | 1 | 2 | 3,
-    score: number,
-    errMsg: string | null,
-    submissionTime: string,
-}
-
-const defaultSubmissionDetail: SubmissionDetail = {
+const defaultSubmissionDetail: SubmissionCell = {
     id: 3,
     username: "unimilk",
     fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv",
@@ -22,8 +16,7 @@ const defaultSubmissionDetail: SubmissionDetail = {
     submissionTime: "2026-04-07 21:31:43",
 }
 
-export function SubmissionDetailDrawer() {
-    const detail = defaultSubmissionDetail;
+export function SubmissionDetailDrawer({ detail }: { detail: SubmissionCell}) {
     return (
         <DrawerContent>
             <DrawerHeader>
@@ -40,8 +33,13 @@ export function SubmissionDetailDrawer() {
                     <p className="pl-4 leading-normal style-lyra:mb-2 style-lyra:leading-relaxed">{ detail.username }</p>
                 </div>
                 <div>
-                    <h1 className="font-bold pb-2">文件存储路径</h1>
-                    <Copy className="size-4" />
+                    <div className="flex space-x-2 items-end pb-2">
+                        <h1 className="font-bold">文件存储路径</h1>
+                        <Copy className="size-4 cursor-pointer" onClick={(e) => {
+                            navigator.clipboard.writeText(detail.fileUri)
+                            toast.info("已复制到剪贴板。", {position: "top-center"})
+                        }} />
+                    </div>
                     <p className="pl-4 leading-normal style-lyra:mb-2 style-lyra:leading-relaxed">{ detail.fileUri }</p>
                 </div>
                 <div>
@@ -50,7 +48,7 @@ export function SubmissionDetailDrawer() {
                 </div>
                 <div>
                     <h1 className="font-bold pb-2">分数</h1>
-                    <p className="pl-4 leading-normal style-lyra:mb-2 style-lyra:leading-relaxed">{ detail.score }</p>
+                    <p className="pl-4 leading-normal style-lyra:mb-2 style-lyra:leading-relaxed">{ detail.score ? detail.score : "无" }</p>
                 </div>
                 <div>
                     <h1 className="font-bold pb-2">错误信息</h1>

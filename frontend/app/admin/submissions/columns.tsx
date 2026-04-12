@@ -5,11 +5,6 @@ import { Button } from "@/components/ui/button"
 import { ArrowUpDown, CircleCheck, CircleX, Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Spinner } from "@/components/ui/spinner"
-import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger,
-} from "@/components/ui/hover-card"
 
 export type SubmissionCell = {
     id: number
@@ -18,39 +13,40 @@ export type SubmissionCell = {
     score: number | null
     submissionTime: string
     errMsg: string | null
+    fileUri: string
 }
 
 export const mockData: SubmissionCell[] = [
-    {"id": 4, "username": "Ethan", "status": 1, "score": 76, "submissionTime": "2026-03-17 10:21", "errMsg": null},
-    {"id": 5, "username": "Sophia", "status": 0, "score": null, "submissionTime": "2026-03-16 08:14", "errMsg": "文件大小超限"},
-    {"id": 6, "username": "Lucas", "status": 3, "score": 88, "submissionTime": "2026-03-15 19:43", "errMsg": null},
-    {"id": 7, "username": "Olivia", "status": 1, "score": 91, "submissionTime": "2026-03-17 16:55", "errMsg": null},
-    {"id": 8, "username": "Noah", "status": 0, "score": null, "submissionTime": "2026-03-16 12:37", "errMsg": "未检测到有效内容"},
-    {"id": 9, "username": "Emma", "status": 3, "score": 73, "submissionTime": "2026-03-15 13:28", "errMsg": null},
-    {"id": 10, "username": "Liam", "status": 1, "score": 85, "submissionTime": "2026-03-17 09:16", "errMsg": null},
-    {"id": 11, "username": "Ava", "status": 0, "score": null, "submissionTime": "2026-03-16 14:52", "errMsg": "格式解析失败"},
-    {"id": 12, "username": "Mason", "status": 3, "score": 67, "submissionTime": "2026-03-15 21:07", "errMsg": null},
-    {"id": 13, "username": "Isabella", "status": 1, "score": 90, "submissionTime": "2026-03-17 18:33", "errMsg": null},
-    {"id": 14, "username": "Logan", "status": 0, "score": null, "submissionTime": "2026-03-16 07:59", "errMsg": "编码不支持"},
-    {"id": 15, "username": "Mia", "status": 2, "score": 79, "submissionTime": "2026-03-15 15:42", "errMsg": null},
-    {"id": 16, "username": "James", "status": 1, "score": 82, "submissionTime": "2026-03-17 11:25", "errMsg": null},
-    {"id": 17, "username": "Charlotte", "status": 0, "score": null, "submissionTime": "2026-03-16 16:18", "errMsg": "上传中断"},
-    {"id": 18, "username": "Benjamin", "status": 2, "score": 71, "submissionTime": "2026-03-15 17:36", "errMsg": null},
-    {"id": 19, "username": "Amelia", "status": 1, "score": 94, "submissionTime": "2026-03-17 13:09", "errMsg": null},
-    {"id": 20, "username": "Elijah", "status": 0, "score": null, "submissionTime": "2026-03-16 10:47", "errMsg": "文件损坏"},
-    {"id": 21, "username": "Harper", "status": 2, "score": 65, "submissionTime": "2026-03-15 12:58", "errMsg": null},
-    {"id": 22, "username": "William", "status": 1, "score": 77, "submissionTime": "2026-03-17 15:44", "errMsg": null},
-    {"id": 23, "username": "Evelyn", "status": 0, "score": null, "submissionTime": "2026-03-16 13:31", "errMsg": "缺少必要字段"},
-    {"id": 24, "username": "Alexander", "status": 2, "score": 86, "submissionTime": "2026-03-15 20:11", "errMsg": null},
-    {"id": 25, "username": "Abigail", "status": 1, "score": 89, "submissionTime": "2026-03-17 08:52", "errMsg": null},
-    {"id": 26, "username": "Daniel", "status": 0, "score": null, "submissionTime": "2026-03-16 17:06", "errMsg": "内容不符合要求"},
-    {"id": 27, "username": "Emily", "status": 2, "score": 74, "submissionTime": "2026-03-15 14:19", "errMsg": null},
-    {"id": 28, "username": "Matthew", "status": 1, "score": 83, "submissionTime": "2026-03-17 19:22", "errMsg": null},
-    {"id": 29, "username": "Ella", "status": 0, "score": null, "submissionTime": "2026-03-16 11:40", "errMsg": "系统校验失败"},
-    {"id": 30, "username": "Joseph", "status": 2, "score": 68, "submissionTime": "2026-03-15 16:03", "errMsg": null},
-    {"id": 31, "username": "Scarlett", "status": 1, "score": 92, "submissionTime": "2026-03-17 12:11", "errMsg": null},
-    {"id": 32, "username": "David", "status": 0, "score": null, "submissionTime": "2026-03-16 09:55", "errMsg": "格式不匹配"},
-    {"id": 33, "username": "Grace", "status": 2, "score": 70, "submissionTime": "2026-03-15 18:27", "errMsg": null}
+    {"id": 4, "username": "Ethan", "status": 1, "score": 76, "submissionTime": "2026-03-17 10:21", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 5, "username": "Sophia", "status": 0, "score": null, "submissionTime": "2026-03-16 08:14", "errMsg": "文件大小超限", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 6, "username": "Lucas", "status": 3, "score": 88, "submissionTime": "2026-03-15 19:43", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 7, "username": "Olivia", "status": 1, "score": 91, "submissionTime": "2026-03-17 16:55", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 8, "username": "Noah", "status": 0, "score": null, "submissionTime": "2026-03-16 12:37", "errMsg": "未检测到有效内容", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 9, "username": "Emma", "status": 3, "score": 73, "submissionTime": "2026-03-15 13:28", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 10, "username": "Liam", "status": 1, "score": 85, "submissionTime": "2026-03-17 09:16", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 11, "username": "Ava", "status": 0, "score": null, "submissionTime": "2026-03-16 14:52", "errMsg": "格式解析失败", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 12, "username": "Mason", "status": 3, "score": 67, "submissionTime": "2026-03-15 21:07", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 13, "username": "Isabella", "status": 1, "score": 90, "submissionTime": "2026-03-17 18:33", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 14, "username": "Logan", "status": 0, "score": null, "submissionTime": "2026-03-16 07:59", "errMsg": "编码不支持", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 15, "username": "Mia", "status": 2, "score": 79, "submissionTime": "2026-03-15 15:42", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 16, "username": "James", "status": 1, "score": 82, "submissionTime": "2026-03-17 11:25", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 17, "username": "Charlotte", "status": 0, "score": null, "submissionTime": "2026-03-16 16:18", "errMsg": "上传中断", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 18, "username": "Benjamin", "status": 2, "score": 71, "submissionTime": "2026-03-15 17:36", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 19, "username": "Amelia", "status": 1, "score": 94, "submissionTime": "2026-03-17 13:09", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 20, "username": "Elijah", "status": 0, "score": null, "submissionTime": "2026-03-16 10:47", "errMsg": "文件损坏", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 21, "username": "Harper", "status": 2, "score": 65, "submissionTime": "2026-03-15 12:58", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 22, "username": "William", "status": 1, "score": 77, "submissionTime": "2026-03-17 15:44", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 23, "username": "Evelyn", "status": 0, "score": null, "submissionTime": "2026-03-16 13:31", "errMsg": "缺少必要字段", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 24, "username": "Alexander", "status": 2, "score": 86, "submissionTime": "2026-03-15 20:11", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 25, "username": "Abigail", "status": 1, "score": 89, "submissionTime": "2026-03-17 08:52", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 26, "username": "Daniel", "status": 0, "score": null, "submissionTime": "2026-03-16 17:06", "errMsg": "内容不符合要求", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 27, "username": "Emily", "status": 2, "score": 74, "submissionTime": "2026-03-15 14:19", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 28, "username": "Matthew", "status": 1, "score": 83, "submissionTime": "2026-03-17 19:22", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 29, "username": "Ella", "status": 0, "score": null, "submissionTime": "2026-03-16 11:40", "errMsg": "系统校验失败", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 30, "username": "Joseph", "status": 2, "score": 68, "submissionTime": "2026-03-15 16:03", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 31, "username": "Scarlett", "status": 1, "score": 92, "submissionTime": "2026-03-17 12:11", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 32, "username": "David", "status": 0, "score": null, "submissionTime": "2026-03-16 09:55", "errMsg": "格式不匹配", fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"},
+    {"id": 33, "username": "Grace", "status": 2, "score": 70, "submissionTime": "2026-03-15 18:27", "errMsg": null, fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv"}
 ]
 
 function FailedBadge({errMsg}: {errMsg: string}) {
@@ -152,6 +148,15 @@ export const columns: ColumnDef<SubmissionCell>[] = [
     },
     {
         accessorKey: "errMsg",
+        header: () => {
+            return
+        },
+        cell: () => {
+            return
+        }
+    },
+    {
+        accessorKey: "fileUri",
         header: () => {
             return
         },
