@@ -111,14 +111,6 @@ export default function () {
             return;
         }
 
-        console.log(JSON.stringify({
-            leaderboardRefreshRate: leaderboardRefreshRate,
-            groundTruth: groundTruth,
-            isLeaderboardEnabled: isLeaderboardEnabled,
-            allowRegistration: allowRegistration,
-            defaultAllowSubmit: defaultAllowSubmit,
-        }))
-        
         const response = await apiFetch("/api/admin/config", {
             method: "POST", body: JSON.stringify({
                 leaderboardRefreshRate: leaderboardRefreshRate,
