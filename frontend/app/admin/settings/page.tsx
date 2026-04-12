@@ -6,6 +6,7 @@ import {
     Field,
     FieldContent,
     FieldDescription,
+    FieldError,
     FieldGroup,
     FieldLabel,
     FieldLegend,
@@ -26,8 +27,8 @@ import {
 import { apiFetch } from "@/lib/api"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
+import { SkeletonSettings } from "./skeleton"
 
 export type Settings = {
     leaderboardRefreshRate: number,   // 单位：s（秒）
@@ -56,6 +57,8 @@ export default function () {
     const [allowRegistration, setAllowRegistration] = useState<boolean>();
     const [defaultAllowSubmit, setDefaultAllowSubmit] = useState<0 | 1>();
 
+    const [leaderboardRefreshRateMsg, setLeaderboardRefreshRateMsg] = useState("");
+
     const [saving, setSaving] = useState(false);
 
     async function fetchSettings() {
@@ -70,12 +73,44 @@ export default function () {
 
     useEffect(() => { fetchSettings() }, [])
 
-    function validateLeaderboardRefreshRate() {
+    function validateLeaderboardRefreshRate(): boolean {
+        setLeaderboardRefreshRateMsg("")
+        if (!leaderboardRefreshRate) {
+            if (leaderboardRefreshRate === undefined) {
+                return true;
+            } else if (leaderboardRefreshRate === 0) {
+                setLeaderboardRefreshRateMsg("刷新率不能为 0。");
+                return false
+            } else {
+                setLeaderboardRefreshRateMsg("刷新率不是合法的数字。");
+                return false
+            }
+        } else if (!/^[0-9]+$/.test(leaderboardRefreshRate.toString())) {
+            setLeaderboardRefreshRateMsg("刷新率不能为负数。");
+            return false;
+        } else if (leaderboardRefreshRate > 604800) {
+            setLeaderboardRefreshRateMsg("刷新率最低为 7 天。");
+            return false;
+        }
+        return true;
+    }
 
+    function clearAllHooks() {
+        setLeaderboardRefreshRate(undefined);
+        setGroundTruth(undefined);
+        setLeaderboardEnabled(undefined);
+        setAllowRegistration(undefined);
+        setDefaultAllowSubmit(undefined);
     }
 
     async function onSaveSettings() {
         setSaving(true);
+
+        if (!validateLeaderboardRefreshRate()) {
+            setSaving(false);
+            return;
+        }
+
         console.log(JSON.stringify({
             leaderboardRefreshRate: leaderboardRefreshRate,
             groundTruth: groundTruth,
@@ -83,6 +118,7 @@ export default function () {
             allowRegistration: allowRegistration,
             defaultAllowSubmit: defaultAllowSubmit,
         }))
+        
         const response = await apiFetch("/api/admin/config", {
             method: "POST", body: JSON.stringify({
                 leaderboardRefreshRate: leaderboardRefreshRate,
@@ -92,6 +128,15 @@ export default function () {
                 defaultAllowSubmit: defaultAllowSubmit,
             })
         })
+
+        if (response.code === 1) {
+            toast.info(response.msg, { position: "top-center" });
+            clearAllHooks();
+            setSettings(response.data as Settings);
+        } else {
+            toast.error(response.msg, { position: "top-center" });
+        }
+
         setSaving(false);
     }
 
@@ -138,7 +183,7 @@ export default function () {
                                     </Field>
                                 </FieldLabel>
                                 <FieldLabel htmlFor="leaderboard-refresh-rate">
-                                    <Field>
+                                    <Field data-invalid={leaderboardRefreshRateMsg !== ""}>
                                         <FieldTitle>排行榜刷新率</FieldTitle>
                                         <InputGroup className="h-8">
                                             <InputGroupInput id="leaderboard-refresh-rate"
@@ -148,6 +193,7 @@ export default function () {
                                             />
                                             <InputGroupAddon align="inline-end">秒</InputGroupAddon>
                                         </InputGroup>
+                                        <FieldError>{leaderboardRefreshRateMsg}</FieldError>
                                     </Field>
                                 </FieldLabel>
                             </FieldGroup>
@@ -226,7 +272,12 @@ export default function () {
                                     <Spinner data-icon="inline-start" className={saving ? "" : "hidden"} />
                                     保存设置
                                 </Button>
-                                <Button variant="outline" type="button">
+                                <Button variant="outline" type="button" onClick={e => {
+                                    e.preventDefault();
+                                    clearAllHooks();
+                                    fetchSettings();
+                                    toast.info("已取消。", {position: "top-center"})
+                                }}>
                                     取消
                                 </Button>
                             </div>
@@ -235,42 +286,5 @@ export default function () {
                 </div>
             </div>
         </form>
-    )
-}
-
-export function SkeletonSettings() {
-    return (
-        <div className="w-full grid grid-cols-2 p-2 space-x-4">
-            <div className="flex w-full max-w-xs flex-col gap-7">
-                <div className="flex flex-col gap-3">
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-8 w-full" />
-                </div>
-                <div className="flex flex-col gap-3">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-8 w-full" />
-                </div>
-                <div className="flex flex-col gap-3">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-8 w-full" />
-                </div>
-                <Skeleton className="h-8 w-24" />
-            </div>
-            <div className="flex w-full max-w-xs flex-col gap-7">
-                <div className="flex flex-col gap-3">
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-8 w-full" />
-                </div>
-                <div className="flex flex-col gap-3">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-8 w-full" />
-                </div>
-                <div className="flex flex-col gap-3">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-8 w-full" />
-                </div>
-                <Skeleton className="h-8 w-24" />
-            </div>
-        </div>
     )
 }

@@ -362,9 +362,12 @@ PUT /admin/config
     {
       "code": 1,
       "data": {
-        "leaderboardRefreshRate": 300,
-        "groundTruth": "./ground_truth/B_test",   
-        "isLeaderboardEnabled": true
+       "leaderboardRefreshRate": 300,
+        "groundTruth": "./ground_truth/B_test",
+        "isLeaderboardEnabled": true,
+        "availableGroundTruths": ["./ground_truth/A_test", "./ground_truth/B_test"],
+        "allowRegistration": true,
+        "defaultAllowSubmit": 1
       },
       "msg": "配置保存成功~"
     }
