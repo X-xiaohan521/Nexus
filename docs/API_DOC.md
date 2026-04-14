@@ -428,10 +428,10 @@ GET /admin/submission
 #### 2.2 获取某提交记录的详细信息
 
 ```
-GET /admin/submission/{$id}
+GET /admin/submission/${id}
 ```
 
-查询 id 为 {$id} 的提交记录。
+查询 id 为 ${id} 的提交记录。
 
 * 成功
     ```json
@@ -486,10 +486,10 @@ GET /admin/users
 #### 3.2 修改用户信息
 
 ```
-PUT /admin/users/{$id}
+PUT /admin/users/${id}
 ```
 
-修改 id 为 {$id} 的用户信息。
+修改 id 为 ${id} 的用户信息。
 
 请求体：
 
@@ -519,10 +519,10 @@ PUT /admin/users/{$id}
 #### 3.3 删除用户
 
 ```
-DELETE /admin/users/{$id}
+DELETE /admin/users/${id}
 ```
 
-删除 id 为 {$id} 的用户。
+删除 id 为 ${id} 的用户。
 
 * 成功
     ```json
