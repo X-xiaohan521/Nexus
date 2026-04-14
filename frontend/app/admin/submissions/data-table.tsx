@@ -29,9 +29,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer"
 import { SubmissionDetailDrawer } from "./submission-detail-drawer"
-import { SubmissionCell } from "./columns"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -55,6 +53,10 @@ export function DataTable<TData, TValue>({
             sorting
         }
     })
+
+    const [drawerOpen, setDrawerOpen] = React.useState(false)
+    const [selectedId, setSelectedId] = React.useState()
+
     return (
         <div className="space-y-2">
             <div className="overflow-hidden rounded-md border">
@@ -83,16 +85,16 @@ export function DataTable<TData, TValue>({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
+                                    onClick={() => {
+                                        setSelectedId(row.getValue("id"));
+                                        setDrawerOpen(true);
+                                    }}
+                                    className="cursor-pointer"
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <Drawer key={cell.id} direction="right">
-                                            <DrawerTrigger asChild className="cursor-pointer">
-                                                <TableCell key={cell.id}>
-                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                </TableCell>
-                                            </DrawerTrigger>
-                                            <SubmissionDetailDrawer detail={cell.getContext().row.original as SubmissionCell} />
-                                        </Drawer>
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
                                     ))}
                                 </TableRow>
                             ))
@@ -185,6 +187,11 @@ export function DataTable<TData, TValue>({
                     </div>
                 </div>
             </div>
+            <SubmissionDetailDrawer
+                open={drawerOpen}
+                onOpenChange={setDrawerOpen}
+                id={selectedId}
+            />
         </div>
     )
 }
