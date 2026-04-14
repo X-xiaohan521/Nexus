@@ -391,18 +391,27 @@ PUT /admin/config
 GET /admin/submission
 ```
 
-允许携带参数：`/admin/submission?page=1&pageSize=10`
+所有提交记录条件查询，按照提交时间倒序排列。
 
-所有提交记录分页查询，按照提交时间倒序排列。
+请求体格式：application/json
+
+（可选）请求体：
+
+```json
+{
+  "username": "mi",   // 用户名（支持模糊查询）
+  "dateRange": "2026-03-07~2026-04-14"
+}
+```
 
 * 成功
     ```json
     {
       "code": 1,
       "data": [
-        {"id": 3, "username": "John", "status": 1, "score": 81, "submissionTime": "2026-03-17 14:17", "errMsg": null},
-        {"id": 2, "username": "Alice", "status": 0, "score": null, "submissionTime": "2026-03-16 09:24", "errMsg": "文档格式有误"},
-        {"id": 1, "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30", "errMsg": null}
+        {"id": 3, "username": "John", "status": 1, "score": 81, "submissionTime": "2026-03-17 14:17"},
+        {"id": 2, "username": "Alice", "status": 0, "score": null, "submissionTime": "2026-03-16 09:24"},
+        {"id": 1, "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30"}
       ],
       "msg": ""
     }

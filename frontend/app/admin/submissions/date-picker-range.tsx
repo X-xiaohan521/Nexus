@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { addDays, format } from "date-fns"
+import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { type DateRange } from "react-day-picker"
+import { zhCN } from "react-day-picker/locale";
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -13,14 +14,13 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function DatePickerWithRange() {
-    const [date, setDate] = React.useState<DateRange | undefined>({
-        from: new Date(new Date().getFullYear(), 0, 20),
-        to: addDays(new Date(new Date().getFullYear(), 0, 20), 20),
-    })
-
+export function DatePickerWithRange({ date, setDate, onClose }: { date: DateRange | undefined, setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>, onClose: () => void}) {
     return (
-        <Popover>
+        <Popover onOpenChange={open => {
+            if (!open) {
+                onClose();
+            }
+        }}>
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"
@@ -31,14 +31,14 @@ export function DatePickerWithRange() {
                     {date?.from ? (
                         date.to ? (
                             <>
-                                {format(date.from, "LLL dd, y")} -{" "}
-                                {format(date.to, "LLL dd, y")}
+                                {format(date.from, "yyyy-MM-dd")} ~{" "}
+                                {format(date.to, "yyyy-MM-dd")}
                             </>
                         ) : (
-                            format(date.from, "LLL dd, y")
+                            format(date.from, "yyyy-MM-dd")
                         )
                     ) : (
-                        <span>Pick a date</span>
+                        <span>根据-日期~范围-筛选</span>
                     )}
                 </Button>
             </PopoverTrigger>
@@ -49,6 +49,7 @@ export function DatePickerWithRange() {
                     selected={date}
                     onSelect={setDate}
                     numberOfMonths={2}
+                    locale={zhCN}
                 />
             </PopoverContent>
         </Popover>
