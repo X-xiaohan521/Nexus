@@ -103,7 +103,7 @@ export default function () {
         }
 
         const response = await apiFetch("/api/admin/config", {
-            method: "POST", body: JSON.stringify({
+            method: "PUT", body: JSON.stringify({
                 leaderboardRefreshRate: leaderboardRefreshRate,
                 groundTruth: groundTruth,
                 isLeaderboardEnabled: isLeaderboardEnabled,
