@@ -67,6 +67,8 @@ public class TokenFilter implements Filter {
 
         if (isAdminPath(requestURI) && userDto.role() != 1) {
             log.warn("User {} access admin page without an admin privilege: prohibited.", userDto.username());
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
 
         log.info("User {} access restricted uri with a valid token: allowed pass.", userDto.username());
