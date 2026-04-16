@@ -39,15 +39,6 @@ export type Settings = {
     availableGroundTruths: string[]   // 可选的 ground_truth 路径
 }
 
-export const defaultSettings: Settings = {
-    leaderboardRefreshRate: 3600,
-    groundTruth: "./ground_truth/A_test",
-    isLeaderboardEnabled: true,
-    allowRegistration: false,
-    defaultAllowSubmit: 0,
-    availableGroundTruths: ["./ground_truth/A_test", "./ground_truth/B_test"]
-}
-
 export default function () {
     const [settings, setSettings] = useState<Settings | null>(null)
 
@@ -67,7 +58,7 @@ export default function () {
             setSettings(response.data as Settings);
         } else {
             toast.error(response.msg, { position: "top-center" });
-            setSettings(defaultSettings);
+            setSettings(null);
         }
     }
 
