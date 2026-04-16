@@ -400,7 +400,7 @@ GET /admin/submission
 ```json
 {
   "username": "mi",   // 用户名（支持模糊查询）
-  "dateRange": "2026-03-07~2026-04-14"
+  "dateRange": "2026-03-07~2026-04-14"   // 日期范围
 }
 ```
 
