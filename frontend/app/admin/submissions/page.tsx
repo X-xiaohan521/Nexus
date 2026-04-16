@@ -33,11 +33,6 @@ export default function () {
     async function getData() {
         setLoading(true);
 
-        console.log(JSON.stringify({
-                    username: username,
-                    dateRange: dateRange ? (dateRange.from ? format( dateRange.from, "yyyy-MM-dd") : "") + "~" + (dateRange.to ? format( dateRange.to, "yyyy-MM-dd") : "") : undefined
-                }))
-
         const response = await apiFetch("/api/admin/submission",
             {
                 body: JSON.stringify({
