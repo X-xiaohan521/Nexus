@@ -1,7 +1,6 @@
-// @ts-expect-error
-import "./globals.css"
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
 import { TopBar } from "./navbar";
 import { ThemeProvider, useTheme } from "next-themes";
 import { UserProvider } from "@/context/user-context";
@@ -50,7 +49,7 @@ export default function RootLayout({
 
             {/* footer */}
             <footer className="h-12 flex flex-col items-center justify-center shadow-md pb-4">
-              <Link href="https://beian.miit.gov.cn/"><Button variant="link" className="text-secondary-foreground">蜀ICP备2026014434号</Button></Link>
+              <Link href="https://beian.miit.gov.cn/"><Button variant="link" className="text-secondary-foreground">蜀ICP备2026014434号-1</Button></Link>
               <p className="text-sm">Copyright © 2026 - AiLab</p>
             </footer>
           </ThemeProvider>
