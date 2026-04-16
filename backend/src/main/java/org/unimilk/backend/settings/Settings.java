@@ -11,4 +11,6 @@ public class Settings {
     private Integer leaderboardRefreshRate = 3600;
     private String groundTruth = "./ground_truth";
     private boolean isLeaderboardEnabled = true;
+    private boolean allowRegistration = true;
+    private Integer defaultAllowSubmit = 1;
 }
