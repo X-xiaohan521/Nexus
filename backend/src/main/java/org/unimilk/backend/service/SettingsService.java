@@ -1,8 +1,12 @@
 package org.unimilk.backend.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.unimilk.backend.dto.ConfigDto;
+import org.unimilk.backend.settings.Settings;
+import org.unimilk.backend.settings.SettingsManager;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +20,25 @@ import java.util.stream.Stream;
 public class SettingsService {
     @Value("${app.data.directory}")
     private String dataDir;
+
+    private final SettingsManager settingsManager;
+
+    @Autowired
+    public SettingsService(SettingsManager settingsManager) {
+        this.settingsManager = settingsManager;
+    }
+
+    public ConfigDto getConfig() {
+        Settings settings = settingsManager.getSettings();
+        return new ConfigDto(
+                settings.getLeaderboardRefreshRate(),
+                settings.getGroundTruth(),
+                settings.isLeaderboardEnabled(),
+                getAvailableGroundTruths(),
+                settings.isAllowRegistration(),
+                settings.getDefaultAllowSubmit()
+        );
+    }
 
     public List<String> getAvailableGroundTruths() {
         // 1. get gtPath
