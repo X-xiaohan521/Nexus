@@ -43,7 +43,7 @@ export default function () {
         setLoading(false);
     }
 
-    useEffect(() => { getData() }, []);
+    useEffect(() => { getData() }, [username, dateRange]);
 
     function clearAllHooks() {
         setUsername("");
@@ -58,22 +58,16 @@ export default function () {
                     <InputGroupInput placeholder="搜索用户..."
                         value={username ? username : ""}
                         onChange={e => {setUsername(e.target.value)}}
-                        onBlur={getData} onKeyDown={e => {
-                            if (e.key === "Enter") {
-                                e.preventDefault()
-                                getData();
-                            }
-                        }} />
+                    />
                     <InputGroupAddon>
                         <Search />
                     </InputGroupAddon>
                 </InputGroup>
                 <div className="space-x-2">
-                    <DatePickerWithRange date={dateRange} setDate={setDateRange} onClose={getData} />
+                    <DatePickerWithRange date={dateRange} setDate={setDateRange} />
                     <Button variant="outline" size="default" onClick={e => {
                         e.preventDefault();
                         clearAllHooks();
-                        getData();
                     }}>
                         <RotateCw className={loading ? "hidden" : ""} />
                         <Spinner data-icon="inline-start" className={loading ? "" : "hidden"} />

@@ -14,13 +14,9 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function DatePickerWithRange({ date, setDate, onClose }: { date: DateRange | undefined, setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>, onClose: () => void}) {
+export function DatePickerWithRange({ date, setDate }: { date: DateRange | undefined, setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>}) {
     return (
-        <Popover onOpenChange={open => {
-            if (!open) {
-                onClose();
-            }
-        }}>
+        <Popover>
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"
