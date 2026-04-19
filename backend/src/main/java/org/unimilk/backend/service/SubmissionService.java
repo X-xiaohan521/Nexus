@@ -25,10 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -190,6 +187,7 @@ public class SubmissionService {
         List<Submission> submissions = submissionRepo.findAll(specification);
         return submissions.stream()
                 .map(s -> new SubmissionLessDto(s.getId(), s.getUser().getUsername(), s.getStatus(), s.getScore(), s.getSubmissionTime()))
+                .sorted(Comparator.comparingInt(SubmissionLessDto::id).reversed())
                 .toList();
     }
 }
