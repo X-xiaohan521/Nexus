@@ -33,7 +33,13 @@ async function handleProxy(req: NextRequest, params: Promise<{ path: string[] }>
     // extract uri from proxy request
     const { path } = await params;
     const uri = path.join("/")
-    const targetUrl = `${backendBase}/${uri}`;
+
+    let requestParam = "";
+    if (req.url.includes("?")) {
+        requestParam = req.url.split("?")[1];
+    }
+
+    const targetUrl = `${backendBase}/${uri}${requestParam ? "?" + requestParam : ""}`;
 
     console.log("Fetching targetUrl: ", targetUrl)
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { columns, mockData, SubmissionCell } from "./columns";
+import { columns, SubmissionCell } from "./columns";
 import { DataTable } from "./data-table";
 import { RotateCw, Search } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
@@ -15,12 +15,9 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { DateRange } from "react-day-picker";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 
-export const defaultDateRange: DateRange = {
-    from: new Date(new Date().getFullYear(), 0, 20),
-    to: addDays(new Date(new Date().getFullYear(), 0, 20), 20),
-}
+const defaultData: SubmissionCell[] = [];
 
 export default function () {
     const [data, setData] = useState<SubmissionCell[]>();
@@ -33,13 +30,9 @@ export default function () {
     async function getData() {
         setLoading(true);
 
-        const response = await apiFetch("/api/admin/submission",
-            {
-                body: JSON.stringify({
-                    username: username,
-                    dateRange: dateRange ? (dateRange.from ? format( dateRange.from, "yyyy-MM-dd") : "") + "~" + (dateRange.to ? format( dateRange.to, "yyyy-MM-dd") : "") : undefined
-                })
-            });
+        const response = await apiFetch(`/api/admin/submission?username=${username ?? ""}&dateRange=${
+            dateRange ? (dateRange.from ? format( dateRange.from, "yyyy-MM-dd") : "") + "~" + (dateRange.to ? format( dateRange.to, "yyyy-MM-dd") : "") : ""
+        }`);
         
         if (response.code === 1) {
             setData(response.data as SubmissionCell[]);
@@ -53,7 +46,7 @@ export default function () {
     useEffect(() => { getData() }, []);
 
     function clearAllHooks() {
-        setUsername(undefined);
+        setUsername("");
         setDateRange(undefined);
     }
 
@@ -89,7 +82,7 @@ export default function () {
                 </div>
             </div>
             <div className="container mx-auto">
-                <DataTable columns={columns} data={data?data:mockData} />
+                <DataTable columns={columns} data={data?data:defaultData} />
             </div>
         </div>
     )
