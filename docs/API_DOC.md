@@ -388,14 +388,10 @@ PUT /admin/config
 #### 2.1 获取所有提交记录
 
 ```
-GET /admin/submission
+GET /admin/submission?username=mi&dateRange=2026-03-07~2026-04-14
 ```
 
-所有提交记录条件查询，按照提交时间倒序排列。
-
-请求体格式：application/json
-
-（可选）请求体：
+所有提交记录条件查询，按照提交时间倒序排列。请求参数可选。
 
 ```json
 {
