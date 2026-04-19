@@ -1,12 +1,13 @@
 package org.unimilk.backend.controller.admin;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.unimilk.backend.dto.ConfigDto;
 import org.unimilk.backend.response.UniResponse;
 import org.unimilk.backend.service.SettingsService;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/config")
 public class ConfigController {
@@ -19,6 +20,12 @@ public class ConfigController {
 
     @GetMapping
     public UniResponse getConfig() {
-        return UniResponse.success(settingsService.getConfig());
+        return UniResponse.success(settingsService.refreshAndGetConfig());
+    }
+
+    @PutMapping
+    public UniResponse updateConfig(@RequestBody ConfigDto newConfig) {
+        settingsService.updateSettings(newConfig);
+        return UniResponse.success(settingsService.getConfig(), "配置保存成功~");
     }
 }

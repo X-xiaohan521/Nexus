@@ -40,6 +40,22 @@ public class SettingsService {
         );
     }
 
+    public ConfigDto refreshAndGetConfig() {
+        settingsManager.refreshSettings();
+        return getConfig();
+    }
+
+    public void updateSettings(ConfigDto newConfig) {
+        Settings settings = settingsManager.getSettings();
+        Settings newSettings = new Settings();
+        newSettings.setGroundTruth((newConfig.groundTruth() != null) ? newConfig.groundTruth() : settings.getGroundTruth());
+        newSettings.setLeaderboardEnabled((newConfig.isLeaderboardEnabled() != null) ? newConfig.isLeaderboardEnabled() : settings.isLeaderboardEnabled());
+        newSettings.setLeaderboardRefreshRate((newConfig.leaderboardRefreshRate() != null) ? newConfig.leaderboardRefreshRate() : settings.getLeaderboardRefreshRate());
+        newSettings.setAllowRegistration((newConfig.allowRegistration() != null) ? newConfig.allowRegistration() : settings.isAllowRegistration());
+        newSettings.setDefaultAllowSubmit((newConfig.defaultAllowSubmit() != null) ? newConfig.defaultAllowSubmit() : settings.getDefaultAllowSubmit());
+        settingsManager.applyAndSaveSettingsFrom(newSettings);
+    }
+
     public List<String> getAvailableGroundTruths() {
         // 1. get gtPath
         Path gtPath = Path.of(dataDir, "ground_truth");
