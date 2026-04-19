@@ -41,7 +41,11 @@ export function SubmissionDetailDrawer({ open, onOpenChange, id }: { open: boole
         }
     }
 
-    useEffect(() => { getDetail() }, [open, id]);
+    useEffect(() => {
+        if (open && id) {
+            getDetail();
+        }
+    }, [open, id]);
 
     if (!detail) {
         return;
