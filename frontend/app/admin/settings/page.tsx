@@ -63,6 +63,11 @@ export default function () {
     }
 
     useEffect(() => { fetchSettings() }, [])
+    useEffect(() => {
+        if (settings !== null) {
+            setAllHooks(settings);
+        }
+    }, [settings]);
 
     function validateLeaderboardRefreshRate(): boolean {
         setLeaderboardRefreshRateMsg("")
@@ -86,12 +91,12 @@ export default function () {
         return true;
     }
 
-    function clearAllHooks() {
-        setLeaderboardRefreshRate(undefined);
-        setGroundTruth(undefined);
-        setLeaderboardEnabled(undefined);
-        setAllowRegistration(undefined);
-        setDefaultAllowSubmit(undefined);
+    function setAllHooks(settings: Settings) {
+        setLeaderboardRefreshRate(settings.leaderboardRefreshRate);
+        setGroundTruth(settings.groundTruth);
+        setLeaderboardEnabled(settings.isLeaderboardEnabled);
+        setAllowRegistration(settings.allowRegistration);
+        setDefaultAllowSubmit(settings.defaultAllowSubmit);
     }
 
     async function onSaveSettings() {
@@ -114,7 +119,6 @@ export default function () {
 
         if (response.code === 1) {
             toast.info(response.msg, { position: "top-center" });
-            clearAllHooks();
             setSettings(response.data as Settings);
         } else {
             toast.error(response.msg, { position: "top-center" });
@@ -153,7 +157,6 @@ export default function () {
                                 <FieldLabel>
                                     <Field orientation="horizontal">
                                         <Checkbox id="toggle-leaderboard" name="toggle-leaderboard"
-                                            defaultChecked={settings.isLeaderboardEnabled}
                                             checked={isLeaderboardEnabled}
                                             onCheckedChange={(checked) => setLeaderboardEnabled(checked === true)}
                                         />
@@ -170,7 +173,7 @@ export default function () {
                                         <FieldTitle>排行榜刷新率</FieldTitle>
                                         <InputGroup className="h-8">
                                             <InputGroupInput id="leaderboard-refresh-rate"
-                                                defaultValue={settings.leaderboardRefreshRate}
+                                                value={leaderboardRefreshRate}
                                                 onChange={e => setLeaderboardRefreshRate(Number(e.target.value))}
                                                 onBlur={validateLeaderboardRefreshRate}
                                             />
@@ -187,7 +190,7 @@ export default function () {
                             <FieldDescription>
                                 设置用于评分的标准答案。
                             </FieldDescription>
-                            <Select defaultValue={settings.groundTruth} onValueChange={setGroundTruth}>
+                            <Select value={groundTruth} onValueChange={setGroundTruth}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue />
                                 </SelectTrigger>
@@ -215,7 +218,6 @@ export default function () {
                             <FieldLabel>
                                 <Field orientation="horizontal">
                                     <Checkbox id="toggle-register" name="toggle-register"
-                                        defaultChecked={settings.allowRegistration}
                                         checked={allowRegistration}
                                         onCheckedChange={(checked) => { setAllowRegistration(checked === true) }}
                                     />
@@ -230,7 +232,7 @@ export default function () {
                             <FieldLabel>
                                 <Field orientation="vertical">
                                     <FieldTitle>新用户默认权限</FieldTitle>
-                                    <Select defaultValue={settings.defaultAllowSubmit ? "allow-submit" : "prohibit-submit"} onValueChange={(e) => {
+                                    <Select value={defaultAllowSubmit ? "allow-submit" : "prohibit-submit"} onValueChange={(e) => {
                                         setDefaultAllowSubmit((e === "allow-submit") ? 1 : 0)
                                     }}>
                                         <SelectTrigger className="w-full">
@@ -257,7 +259,6 @@ export default function () {
                                 </Button>
                                 <Button variant="outline" type="button" onClick={e => {
                                     e.preventDefault();
-                                    clearAllHooks();
                                     fetchSettings();
                                     toast.info("已取消。", {position: "top-center"})
                                 }}>
