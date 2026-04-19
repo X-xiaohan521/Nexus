@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.unimilk.backend.dto.ConfigDto;
+import org.unimilk.backend.scheduler.RefreshLeaderboardScheduler;
 import org.unimilk.backend.settings.Settings;
 import org.unimilk.backend.settings.SettingsManager;
 
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -22,10 +24,12 @@ public class SettingsService {
     private String dataDir;
 
     private final SettingsManager settingsManager;
+    private final RefreshLeaderboardScheduler refreshLeaderboardScheduler;
 
     @Autowired
-    public SettingsService(SettingsManager settingsManager) {
+    public SettingsService(SettingsManager settingsManager, RefreshLeaderboardScheduler refreshLeaderboardScheduler) {
         this.settingsManager = settingsManager;
+        this.refreshLeaderboardScheduler = refreshLeaderboardScheduler;
     }
 
     public ConfigDto getConfig() {
@@ -41,7 +45,11 @@ public class SettingsService {
     }
 
     public ConfigDto refreshAndGetConfig() {
+        Settings oldSettings = settingsManager.getSettings();
         settingsManager.refreshSettings();
+        if (!Objects.equals(oldSettings.getLeaderboardRefreshRate(), settingsManager.getSettings().getLeaderboardRefreshRate())) {
+            refreshLeaderboardScheduler.restartTask();
+        }
         return getConfig();
     }
 
@@ -53,7 +61,14 @@ public class SettingsService {
         newSettings.setLeaderboardRefreshRate((newConfig.leaderboardRefreshRate() != null) ? newConfig.leaderboardRefreshRate() : settings.getLeaderboardRefreshRate());
         newSettings.setAllowRegistration((newConfig.allowRegistration() != null) ? newConfig.allowRegistration() : settings.isAllowRegistration());
         newSettings.setDefaultAllowSubmit((newConfig.defaultAllowSubmit() != null) ? newConfig.defaultAllowSubmit() : settings.getDefaultAllowSubmit());
+        boolean needRestartRefreshLeaderboardScheduler = !Objects.equals(
+                newSettings.getLeaderboardRefreshRate(),
+                settings.getLeaderboardRefreshRate()
+        );
         settingsManager.applyAndSaveSettingsFrom(newSettings);
+        if (needRestartRefreshLeaderboardScheduler) {
+            refreshLeaderboardScheduler.restartTask();
+        }
     }
 
     public List<String> getAvailableGroundTruths() {
