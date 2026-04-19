@@ -1,12 +1,16 @@
 package org.unimilk.backend.service;
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.unimilk.backend.dto.SubmissionDto;
+import org.unimilk.backend.dto.SubmissionLessDto;
+import org.unimilk.backend.dto.SubmissionsQueryConditionDto;
 import org.unimilk.backend.entity.Submission;
 import org.unimilk.backend.entity.User;
 import org.unimilk.backend.exception.BusinessException;
@@ -21,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -157,5 +162,34 @@ public class SubmissionService {
         }
 
         submissionRepo.save(submission);
+    }
+
+    public List<SubmissionLessDto> getAllSubmissionsByCondition(SubmissionsQueryConditionDto condition) {
+        String username = condition.username();
+        String dateRange = condition.dateRange();
+        LocalDateTime startDate, endDate;
+        if (dateRange != null && !dateRange.isEmpty()) {
+            String[] split = dateRange.split("~");
+            startDate = LocalDateTime.parse(split[0] + "T00:00:00");
+            endDate = LocalDateTime.parse(split[1] + "T23:59:59");
+        } else {
+            endDate = null;
+            startDate = null;
+        }
+        Specification<Submission> specification =(root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (username != null && !username.isEmpty()) {
+                predicates.add(cb.like(root.get("user").get("username"), "%" + username + "%"));
+            }
+            if (dateRange != null && !dateRange.isEmpty()) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("submissionTime"), startDate));
+                predicates.add(cb.lessThanOrEqualTo(root.get("submissionTime"), endDate));
+            }
+            return cb.and(predicates);
+        };
+        List<Submission> submissions = submissionRepo.findAll(specification);
+        return submissions.stream()
+                .map(s -> new SubmissionLessDto(s.getId(), s.getUser().getUsername(), s.getStatus(), s.getScore(), s.getSubmissionTime()))
+                .toList();
     }
 }
