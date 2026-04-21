@@ -108,37 +108,7 @@ POST /auth/register
 
 ---
 
-### 3. 刷新令牌
-
-```
-GET /auth/refreshToken
-```
-
-刷新当前的认证令牌。
-
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": {
-            "token": "<newToken>"
-        },
-      "msg": "令牌已刷新。"
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "令牌无效，请重新登录。"
-    }
-    ```
-
----
-
-### 4. 初始化 Captcha 凭证
+### 3. 初始化 Captcha 凭证
 
 ```
 GET /auth/captcha/init
