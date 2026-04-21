@@ -125,6 +125,19 @@ export const createColumns = (getData: () => void): ColumnDef<UserCell>[] => [
                 }
             }
 
+            async function deleteUser(id: number) {
+                if (!id) return;
+                const response = await apiFetch(`/api/admin/users/${id}`, {
+                    method: "DELETE"
+                })
+                if (response.code === 1) {
+                    toast.info(response.msg, {position: "top-center"});
+                    getData();
+                } else {
+                    toast.error(response.msg, {position: "top-center"});
+                }
+            }
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -160,7 +173,7 @@ export const createColumns = (getData: () => void): ColumnDef<UserCell>[] => [
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>取消</AlertDialogCancel>
-                                    <AlertDialogAction variant="destructive">删除</AlertDialogAction>
+                                    <AlertDialogAction variant="destructive" onClick={() => deleteUser(row.getValue("id"))}>删除</AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
