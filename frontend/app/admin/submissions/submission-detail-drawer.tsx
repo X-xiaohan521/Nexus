@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose, Drawer } from "@/components/ui/drawer";
-import { Copy } from "lucide-react";
+import { CircleCheck, CircleX, Clock, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 import { useEffect, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
+import { Badge } from "@/components/ui/badge";
 
 export type SubmissionDetail = {
     id: number
@@ -18,13 +20,56 @@ export type SubmissionDetail = {
 }
 
 const defaultSubmissionDetail: SubmissionDetail = {
-    id: 3,
-    username: "unimilk",
-    fileUri: "/submission/unimilk/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv",
+    id: 0,
+    username: "",
+    fileUri: "",
     status: 1,
-    score: 0.53592587,
+    score: 0,
     errMsg: null,
-    submissionTime: "2026-04-07 21:31:43",
+    submissionTime: "",
+}
+
+function FailedBadge() {
+    return (
+        <Badge variant="destructive">
+            <CircleX data-icon="inline-start" />
+            失败
+        </Badge>
+    )
+}
+
+function SuccessBadge() {
+    return (
+        <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300" variant="secondary">
+            <CircleCheck data-icon="inline-start" />
+            成功
+        </Badge>
+    )
+}
+
+function RunningBadge() {
+    return (
+        <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+            <Spinner data-icon="inline-start" />
+            评测中
+        </Badge>
+    )
+}
+
+function PendingBadge() {
+    return (
+        <Badge variant="secondary">
+            <Clock data-icon="inline-start" />
+            排队中
+        </Badge>
+    )
+}
+
+const statusMap = {
+  0: <FailedBadge />,
+  1: <SuccessBadge />,
+  2: <PendingBadge />,
+  3: <RunningBadge />,
 }
 
 export function SubmissionDetailDrawer({ open, onOpenChange, id }: { open: boolean, onOpenChange: (open: boolean) => void, id: number | undefined }) {
@@ -79,7 +124,9 @@ export function SubmissionDetailDrawer({ open, onOpenChange, id }: { open: boole
                     </div>
                     <div>
                         <h1 className="font-bold pb-2">状态</h1>
-                        <p className="pl-4 leading-normal style-lyra:mb-2 style-lyra:leading-relaxed">{detail.status}</p>
+                        <p className="pl-4 leading-normal style-lyra:mb-2 style-lyra:leading-relaxed">
+                            {statusMap[detail.status] ?? null}
+                        </p>
                     </div>
                     <div>
                         <h1 className="font-bold pb-2">分数</h1>
