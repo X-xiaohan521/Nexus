@@ -1,4 +1,4 @@
-package org.unimilk.backend.controller;
+package org.unimilk.backend.controller.pub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +7,7 @@ import org.unimilk.backend.dto.TokenDto;
 import org.unimilk.backend.request.AuthRequest;
 import org.unimilk.backend.response.UniResponse;
 import org.unimilk.backend.service.AuthService;
+import org.unimilk.backend.settings.SettingsManager;
 
 import java.util.Map;
 
@@ -14,13 +15,15 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
+    private final SettingsManager settingsManager;
 
     @Value("${app.captcha.id}")
     private String captchaId;
 
     @Autowired
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, SettingsManager settingsManager) {
         this.authService = authService;
+        this.settingsManager = settingsManager;
     }
 
     @PostMapping("/login")
@@ -31,6 +34,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public UniResponse onRegister(@RequestBody AuthRequest req) throws InterruptedException {
+        if (!settingsManager.getSettings().isAllowRegistration()) {
+            return UniResponse.error("抱歉，当前未开放注册。");
+        }
         Thread.sleep(200);
         authService.verifyCaptcha(req.captchaResult());
         TokenDto tokenDto = authService.handleRegister(req.username(), req.password());

@@ -4,7 +4,7 @@
 
 ## 📋 概览 Overview
 
-* **当前版本**：v1.0.2
+* **当前版本**：v1.1.0
 * **Web-UI 默认端口**：7842
 * **建议使用 Docker 部署**
 
@@ -16,6 +16,7 @@
 ### 1. 用户账号
 * 提供用户账号 注册 + 登录 功能
 * 未登录用户可以查看排行榜，但提交结果需要登录
+* 具有管理员权限的用户可以访问管理后台，进行服务端配置等操作
 
 ### 2. 文件上传 + 个人提交记录
 * 在账号登录之后，提供 .csv 文件上传功能
@@ -35,6 +36,23 @@
 
 ![leaderboard](./images/leaderboard.png)
 
+### 5. 管理面板
+- 系统设置
+
+  ![admin settings](./images/admin_settings.png)
+
+- 提交记录
+  > 在这里可以查看所有用户的全部提交记录。
+
+  ![admin submissions](./images/admin_submissions.png)
+
+  > 点击记录可以查看详细信息。
+
+  ![admin submissions detail](./images/submission_detail.png)
+
+- 用户管理
+
+  ![admin users](./images/admin_users.png)
 ---
 
 ## 📥 快速开始 Quick Start
@@ -47,7 +65,7 @@
 ```yml
 services:
   backend:
-    image: unimilk/nexus:backend-1.0.2
+    image: unimilk/nexus:backend-1.1.0
     ports:
       - "6780:6780"
     volumes:
@@ -62,7 +80,7 @@ services:
     depends_on:
       - rabbit-mq
   frontend:
-    image: unimilk/nexus:frontend-1.0.2
+    image: unimilk/nexus:frontend-1.1.0
     ports:
       - "7842:7842"
     environment:
@@ -71,13 +89,12 @@ services:
     depends_on:
       - backend
   evaluator:
-    image: unimilk/nexus:evaluator-1.0.2
+    image: unimilk/nexus:evaluator-1.1.0
     volumes:
       - /data/nexus:/app/data
     environment:
       TZ: Asia/Shanghai
       NEXUS_DATA: /app/data
-      NEXUS_BACKEND_HOST: backend
       NEXUS_MQ_HOST: rabbit
     depends_on:
       - rabbit-mq
@@ -115,7 +132,7 @@ services:
     部署后端需要 JRE 21 环境 以及 maven，进入 `./backend` 目录，执行：
     ```bash
     mvn clean package
-    java -jar ./target/backend-1.0.2.jar
+    java -jar ./target/backend-1.1.0.jar
     ```
     即可在 `localhost:6780` 启动后端服务。
 
@@ -172,14 +189,16 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 ```json
 {
-  "leaderboardRefreshRate": 3600,   // 排行榜刷新间隔，单位：s（秒）
-  "groundTruth": "./ground_truth/A_test",   // 标准答案路径
-  "isLeaderboardEnabled": true   // 排行榜是否开启
+    "leaderboardRefreshRate": 3600,   // 排行榜刷新间隔，单位：s（秒）
+    "groundTruth": "./ground_truth/A_test",   // ground_truth 路径
+    "isLeaderboardEnabled": true,   // 排行榜是否开启
+    "allowRegistration": true,   // 是否允许新用户注册
+    "defaultAllowSubmit": 1   // 是否默认允许新用户提交
 }
 ```
 
 > [!NOTE]
-> 配置文件更改后，需要重启后端服务才能生效。
+> 手动修改配置文件后，需要 **重启后端服务** 或 **调用获取配置接口** 才能生效。
 
 ---
 
@@ -201,14 +220,15 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 > 📌 此处只列出最新版本，更早版本详见 `CHANGELOG.md`。
 
-### [1.0.2] - 2026-04-21
+### [1.1.0] - 2026-04-21
 
-### 🛠 修复
-- 修复 `config.json` 中 isLeaderboardEnabled 字段不生效的问题。(issue #8)
-- 修复错误的默认 `groundTruth` 路径。
-- 修复后端消费评测结果时遗漏的幂等性处理。
-- 修复 `README.md` 中错误的版本号 和 `config.json` 字段。
-- 修复错误的 ICP 备案号。
+### 🆕 新增
+- 新增管理员面板，方便调整系统设置、查询提交记录、管理用户状态。(issue #2)
+- 新增 `allowRegistration` 和 `defaultAllowSubmit` 设置项，加强对新用户注册和提交的控制。(issue #2)
+- 允许管理员删除用户及其提交记录。
+
+### 🌟 优化
+- 优化了 `/admin/submission` 页面的 Drawer 实例数量，提升前端响应速度。
 
 ---
 

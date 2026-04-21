@@ -1,4 +1,4 @@
-package org.unimilk.backend.controller;
+package org.unimilk.backend.controller.pub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

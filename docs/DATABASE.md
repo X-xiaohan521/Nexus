@@ -1,10 +1,10 @@
 # 数据库设计
 ## 数据表及字段
 ### 1. user 表
-| id | username | password | role 0(user) / 1(admin) |
-| --- | ------ | ---------- | --- |
-| 1   | Milk   | $2a$10$...   | 1 |
-| 2   | John   | $2a$10$...   | 0 |
+| id | username | password | role 0(user) / 1(admin) | allow_submit 0(prohibit) / 1(allow) |
+| --- | ------ | ---------- | --- | --- |
+| 1   | Milk   | $2a$10$...   | 1 |  1  |
+| 2   | John   | $2a$10$...   | 0 |  0  |
 
 ### 2. submission 表
 | id | file_uri | status 0(failed) / 1(success) / 2(pending) / 3(running) | score | err_msg | submission_time | user_id |

@@ -1,12 +1,17 @@
 package org.unimilk.backend.service;
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.unimilk.backend.dto.SubmissionDetailDto;
 import org.unimilk.backend.dto.SubmissionDto;
+import org.unimilk.backend.dto.SubmissionLessDto;
+import org.unimilk.backend.dto.SubmissionsQueryConditionDto;
 import org.unimilk.backend.entity.Submission;
 import org.unimilk.backend.entity.User;
 import org.unimilk.backend.exception.BusinessException;
@@ -21,9 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -56,9 +59,15 @@ public class SubmissionService {
 
     @Transactional
     public void onSubmit(Integer userId, String username, MultipartFile file, LocalDateTime submitTime) {
-        // 0. judge if submit is allowed
+        // 0.1 judge if submit is allowed
         if (!settingsManager.getSettings().isLeaderboardEnabled()) {
             throw new BusinessException("当前排行榜未开启，无法提交。", "User " + username + " failed to submit: leaderboard is closed.");
+        }
+
+        // 0.2 judge if the user has the permission to submit
+        User user = userRepo.findById(userId).orElseThrow(() -> new BusinessException("用户不存在，请联系管理员。", "User id " + userId + " not found."));
+        if (Objects.equals(user.getAllowSubmit(), 0)) {
+            throw new BusinessException("抱歉，您暂时没有权限提交。", "User " + username + " failed to submit: lack permission.");
         }
 
         // 1. validate the file
@@ -86,7 +95,6 @@ public class SubmissionService {
         }
 
         // 3. save a record to the submission database
-        User user = userRepo.findById(userId).orElseThrow(() -> new BusinessException("用户不存在，请联系管理员。", "User id " + userId + " not found."));
         Submission submission = new Submission(null, fileUri, 3, null, null, submitTime, user);
         Submission savedSubmission = submissionRepo.save(submission);
 
@@ -157,5 +165,40 @@ public class SubmissionService {
         }
 
         submissionRepo.save(submission);
+    }
+
+    public List<SubmissionLessDto> getAllSubmissionsByCondition(SubmissionsQueryConditionDto condition) {
+        String username = condition.username();
+        String dateRange = condition.dateRange();
+        LocalDateTime startDate, endDate;
+        if (dateRange != null && !dateRange.isEmpty()) {
+            String[] split = dateRange.split("~");
+            startDate = LocalDateTime.parse(split[0] + "T00:00:00");
+            endDate = LocalDateTime.parse(split[1] + "T23:59:59");
+        } else {
+            endDate = null;
+            startDate = null;
+        }
+        Specification<Submission> specification =(root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (username != null && !username.isEmpty()) {
+                predicates.add(cb.like(root.get("user").get("username"), "%" + username + "%"));
+            }
+            if (dateRange != null && !dateRange.isEmpty()) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("submissionTime"), startDate));
+                predicates.add(cb.lessThanOrEqualTo(root.get("submissionTime"), endDate));
+            }
+            return cb.and(predicates);
+        };
+        List<Submission> submissions = submissionRepo.findAll(specification);
+        return submissions.stream()
+                .map(s -> new SubmissionLessDto(s.getId(), s.getUser().getUsername(), s.getStatus(), s.getScore(), s.getSubmissionTime()))
+                .sorted(Comparator.comparingInt(SubmissionLessDto::id).reversed())
+                .toList();
+    }
+
+    public SubmissionDetailDto getSubmissionDetailById(Integer id) {
+        Submission submission = submissionRepo.findById(id).orElseThrow(() -> new BusinessException("找不到 id 为 " + id + " 的提交记录。", "Failed to find submission " + id));
+        return new SubmissionDetailDto(submission.getId(), submission.getFileUri(), submission.getUser().getUsername(), submission.getStatus(), submission.getScore(), submission.getErrMsg(), submission.getSubmissionTime());
     }
 }

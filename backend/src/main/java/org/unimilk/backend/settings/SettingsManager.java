@@ -3,7 +3,6 @@ package org.unimilk.backend.settings;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +88,7 @@ public class SettingsManager {
     }
 
     public synchronized void applyAndSaveSettingsFrom(Settings newSettings) {
-        this.settings = newSettings;
+        applySettingsFrom(newSettings);
         saveSettings();
     }
 }

@@ -1,4 +1,4 @@
-package org.unimilk.backend.controller;
+package org.unimilk.backend.controller.pub;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

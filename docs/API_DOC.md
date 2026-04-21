@@ -108,37 +108,7 @@ POST /auth/register
 
 ---
 
-### 3. 刷新令牌
-
-```
-GET /auth/refreshToken
-```
-
-刷新当前的认证令牌。
-
-**响应：**
-* 成功
-    ```json
-    {
-      "code": 1,
-      "data": {
-            "token": "<newToken>"
-        },
-      "msg": "令牌已刷新。"
-    }
-    ```
-* 失败
-    ```json
-    {
-      "code": 0,
-      "data": null,
-      "msg": "令牌无效，请重新登录。"
-    }
-    ```
-
----
-
-### 4. 初始化 Captcha 凭证
+### 3. 初始化 Captcha 凭证
 
 ```
 GET /auth/captcha/init
@@ -300,16 +270,105 @@ GET /leaderboard
 
 > [!IMPORTANT]
 > 以下接口均只允许管理员访问，需携带管理员用户的 token 访问。
+    
+---
 
-### 1. 获取所有提交记录
+### 1. 系统设置
+
+#### 1.1 获取当前配置
 
 ```
-GET /admin/submission
+GET /admin/config
 ```
 
-允许携带参数：`/admin/submission?page=1&pageSize=10`
+获取当前系统配置信息，注意这会同时使后端重新加载 `config.json`。
 
-所有提交记录分页查询，按照提交时间倒序排列。
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": {
+        "leaderboardRefreshRate": 3600,   // 单位：s（秒）
+        "groundTruth": "./ground_truth/A_test",   // ground_truth 路径
+        "isLeaderboardEnabled": true,   // 排行榜是否开启
+        "availableGroundTruths": ["./ground_truth/A_test", "./ground_truth/B_test"],   // 可用的 ground_truth 路径
+        "allowRegistration": true,   // 是否允许新用户注册
+        "defaultAllowSubmit": 1   // 是否默认允许新用户提交
+      },
+      "msg": ""
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+#### 1.2 修改当前配置
+
+```
+PUT /admin/config
+```
+
+请求体格式：application/json
+
+请求体：
+
+```json
+{
+  "leaderboardRefreshRate": 300,
+  "groundTruth": "./ground_truth/B_test",
+  "isLeaderboardEnabled": true
+}
+```
+
+> 可以仅传递需要修改的字段，留空的配置将不会修改。
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": {
+       "leaderboardRefreshRate": 300,
+        "groundTruth": "./ground_truth/B_test",
+        "isLeaderboardEnabled": true,
+        "availableGroundTruths": ["./ground_truth/A_test", "./ground_truth/B_test"],
+        "allowRegistration": true,
+        "defaultAllowSubmit": 1
+      },
+      "msg": "配置保存成功~"
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+---
+
+### 2. 提交记录
+
+#### 2.1 获取所有提交记录
+
+```
+GET /admin/submission?username=mi&dateRange=2026-03-07~2026-04-14
+```
+
+所有提交记录条件查询，按照提交时间倒序排列。请求参数可选。
+
+```json
+{
+  "username": "mi",   // 用户名（支持模糊查询）
+  "dateRange": "2026-03-07~2026-04-14"   // 日期范围
+}
+```
 
 * 成功
     ```json
@@ -331,26 +390,20 @@ GET /admin/submission
       "msg": "你没有权限这么做。"
     }
     ```
-    
----
 
-### 2. 获取当前配置
+#### 2.2 获取某提交记录的详细信息
 
 ```
-GET /admin/config
+GET /admin/submission/${id}
 ```
 
-获取当前系统配置信息。
+查询 id 为 ${id} 的提交记录。
 
 * 成功
     ```json
     {
       "code": 1,
-      "data": {
-        "leaderboardRefreshRate": 3600,   // 单位：s（秒）
-        "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
-        "isLeaderboardEnabled": true   // 排行榜是否开启
-      },
+      "data": {"id": 1, "fileUri": "/submission/4a275939-f701-4afb-b1e0-4dcab814a4ea.csv", "username": "Milk", "status": 2, "score": 83, "submissionTime": "2026-03-15 22:30:15", "errMsg": null},
       "msg": ""
     }
     ```
@@ -365,44 +418,25 @@ GET /admin/config
 
 ---
 
-### 3. 修改当前配置
+### 3. 用户
+
+#### 3.1 获取用户列表
 
 ```
-PUT /admin/config
+GET /admin/users
 ```
 
-请求体格式：application/json
+获取当前系统中所有用户信息。
 
-请求体：
-
-```json
-{
-  "leaderboardRefreshRate": 3600,   // 单位：s（秒）
-  "correctAnswer": "/data/correct_answer.txt",   // 标准答案路径
-  "isLeaderboardEnabled": true   // 排行榜是否开启
-}
-```
-
-> 可以仅传递需要修改的字段，留空的配置将不会修改。
-
----
-
-### 4. 上传正确答案
-
-```
-POST /admin/answer
-```
-
-请求体格式：multipart/form-data
-
-仅允许上传规定的 submission 文件格式，先前的答案不会被覆盖。
-
-**响应：**
 * 成功
     ```json
     {
       "code": 1,
-      "data": null,
+      "data": [
+        {"id": 1, "username": "Milk", "role": 1, "allowSubmit": 1},
+        {"id": 2, "username": "John", "role": 0, "allowSubmit": 0},
+        {"id": 3, "username": "Jessica", "role": 0, "allowSubmit": 1}
+      ],
       "msg": ""
     }
     ```
@@ -411,6 +445,64 @@ POST /admin/answer
     {
       "code": 0,
       "data": null,
-      "msg": "文件不符合要求，请重新提交。"
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+#### 3.2 修改用户信息
+
+```
+PUT /admin/users/${id}
+```
+
+修改 id 为 ${id} 的用户信息。
+
+请求体：
+
+```json
+{
+  "allowSubmit": 0
+}
+```
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": null,
+      "msg": "修改成功~"
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
+    }
+    ```
+
+#### 3.3 删除用户
+
+```
+DELETE /admin/users/${id}
+```
+
+删除 id 为 ${id} 的用户。
+
+* 成功
+    ```json
+    {
+      "code": 1,
+      "data": null,
+      "msg": "用户删除成功~"
+    }
+    ```
+* 失败
+    ```json
+    {
+      "code": 0,
+      "data": null,
+      "msg": "你没有权限这么做。"
     }
     ```

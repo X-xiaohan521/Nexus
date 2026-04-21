@@ -22,6 +22,7 @@ public class User {
     String username;
     String password;
     Integer role;
+    Integer allowSubmit;
 
     @OneToMany(mappedBy = "user")
     List<Submission> submissions;

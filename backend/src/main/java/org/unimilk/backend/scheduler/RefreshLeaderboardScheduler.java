@@ -46,4 +46,10 @@ public class RefreshLeaderboardScheduler {
             future.cancel(false);
         }
     }
+
+    public void restartTask() {
+        log.info("Restarting scheduled task: refresh leaderboard.");
+        stopTask();
+        startTask();
+    }
 }
