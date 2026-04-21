@@ -22,6 +22,7 @@ import org.unimilk.backend.entity.User;
 import org.unimilk.backend.exception.BusinessException;
 import org.unimilk.backend.repo.UserRepo;
 import org.unimilk.backend.response.CaptchaVerifyResponse;
+import org.unimilk.backend.settings.SettingsManager;
 import org.unimilk.backend.util.JwtUtils;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class AuthService {
     private final JwtUtils jwtUtils;
     private final Gson gson;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final SettingsManager settingsManager;
 
     @Value("${app.captcha.id}")
     private String captchaId;
@@ -42,11 +44,12 @@ public class AuthService {
     private String captchaKey;
 
     @Autowired
-    public AuthService(UserRepo userRepo, JwtUtils jwtUtils, Gson gson, BCryptPasswordEncoder passwordEncoder) {
+    public AuthService(UserRepo userRepo, JwtUtils jwtUtils, Gson gson, BCryptPasswordEncoder passwordEncoder, SettingsManager settingsManager) {
         this.userRepo = userRepo;
         this.jwtUtils = jwtUtils;
         this.gson = gson;
         this.passwordEncoder = passwordEncoder;
+        this.settingsManager = settingsManager;
     }
 
     public TokenDto handleLogin(String username, String password) {
@@ -87,7 +90,7 @@ public class AuthService {
         String encryptedPassword = passwordEncoder.encode(password);
 
         // 4. store the new user to database
-        User user = new User(null, username, encryptedPassword, 0, new ArrayList<>());
+        User user = new User(null, username, encryptedPassword, 0, settingsManager.getSettings().getDefaultAllowSubmit(), new ArrayList<>());
         try {
             user = userRepo.save(user);
         } catch (Exception e) {
