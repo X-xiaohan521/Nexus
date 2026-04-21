@@ -58,9 +58,15 @@ public class SubmissionService {
 
     @Transactional
     public void onSubmit(Integer userId, String username, MultipartFile file, LocalDateTime submitTime) {
-        // 0. judge if submit is allowed
+        // 0.1 judge if submit is allowed
         if (!settingsManager.getSettings().isLeaderboardEnabled()) {
             throw new BusinessException("当前排行榜未开启，无法提交。", "User " + username + " failed to submit: leaderboard is closed.");
+        }
+
+        // 0.2 judge if the user has the permission to submit
+        User user = userRepo.findById(userId).orElseThrow(() -> new BusinessException("用户不存在，请联系管理员。", "User id " + userId + " not found."));
+        if (Objects.equals(user.getAllowSubmit(), 0)) {
+            throw new BusinessException("抱歉，您暂时没有权限提交。", "User " + username + " failed to submit: lack permission.");
         }
 
         // 1. validate the file
@@ -88,7 +94,6 @@ public class SubmissionService {
         }
 
         // 3. save a record to the submission database
-        User user = userRepo.findById(userId).orElseThrow(() -> new BusinessException("用户不存在，请联系管理员。", "User id " + userId + " not found."));
         Submission submission = new Submission(null, fileUri, 3, null, null, submitTime, user);
         Submission savedSubmission = submissionRepo.save(submission);
 
