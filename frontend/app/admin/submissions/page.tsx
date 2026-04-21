@@ -67,7 +67,11 @@ export default function () {
                     <DatePickerWithRange date={dateRange} setDate={setDateRange} />
                     <Button variant="outline" size="default" onClick={e => {
                         e.preventDefault();
-                        clearAllHooks();
+                        if (username || dateRange) {
+                            clearAllHooks();
+                        } else {
+                            getData();
+                        }
                     }}>
                         <RotateCw className={loading ? "hidden" : ""} />
                         <Spinner data-icon="inline-start" className={loading ? "" : "hidden"} />
