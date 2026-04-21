@@ -4,8 +4,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { apiFetch } from "@/lib/api"
 import { ColumnDef } from "@tanstack/react-table"
 import { Check, MoreHorizontal, ShieldUser, Trash2Icon, User, X } from "lucide-react"
+import { toast } from "sonner"
+
 
 export type UserCell = {
     id: number,
@@ -106,6 +109,21 @@ export const columns: ColumnDef<UserCell>[] = [
             )
         },
         cell: ({ row }) => {
+            async function modifyAllowSubmit(id: number, allowSubmit: number) {
+                if (!id) return;
+                const response = await apiFetch(`/api/admin/users/${id}`, {
+                    method: "PUT",
+                    body: JSON.stringify({
+                        allowSubmit: allowSubmit
+                    })
+                }, false, true)
+                if (response.code === 1) {
+                    toast.info(response.msg, {position: "top-center"});
+                } else {
+                    toast.error(response.msg, {position: "top-center"});
+                }
+            }
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -115,11 +133,11 @@ export const columns: ColumnDef<UserCell>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         {row.getValue("allowSubmit") === 0 ? (
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => modifyAllowSubmit(row.getValue("id"), 1)}>
                                 允许提交
                             </DropdownMenuItem>
                         ) : (
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => modifyAllowSubmit(row.getValue("id"), 0)}>
                                 禁止提交
                             </DropdownMenuItem>
                         )}
