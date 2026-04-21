@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.unimilk.backend.dto.SubmissionDetailDto;
 import org.unimilk.backend.dto.SubmissionDto;
 import org.unimilk.backend.dto.SubmissionLessDto;
 import org.unimilk.backend.dto.SubmissionsQueryConditionDto;
@@ -194,5 +195,10 @@ public class SubmissionService {
                 .map(s -> new SubmissionLessDto(s.getId(), s.getUser().getUsername(), s.getStatus(), s.getScore(), s.getSubmissionTime()))
                 .sorted(Comparator.comparingInt(SubmissionLessDto::id).reversed())
                 .toList();
+    }
+
+    public SubmissionDetailDto getSubmissionDetailById(Integer id) {
+        Submission submission = submissionRepo.findById(id).orElseThrow(() -> new BusinessException("找不到 id 为 " + id + " 的提交记录。", "Failed to find submission " + id));
+        return new SubmissionDetailDto(submission.getId(), submission.getFileUri(), submission.getUser().getUsername(), submission.getStatus(), submission.getScore(), submission.getErrMsg(), submission.getSubmissionTime());
     }
 }
