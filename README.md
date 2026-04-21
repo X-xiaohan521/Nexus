@@ -52,7 +52,7 @@
 
 - 用户管理
 
-  ![admin users](admin_users.png)
+  ![admin users](./images/admin_users.png)
 ---
 
 ## 📥 快速开始 Quick Start
@@ -223,8 +223,8 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 ### [1.1.0] - 2026-04-21
 
 ### 🆕 新增
-- 新增管理员面板，方便调整系统设置、查询提交记录、管理用户状态。
-- 新增 `allowRegistration` 和 `defaultAllowSubmit` 设置项，加强对新用户注册和提交的控制。
+- 新增管理员面板，方便调整系统设置、查询提交记录、管理用户状态。(issue #2)
+- 新增 `allowRegistration` 和 `defaultAllowSubmit` 设置项，加强对新用户注册和提交的控制。(issue #2)
 - 允许管理员删除用户及其提交记录。
 
 ### 🌟 优化
