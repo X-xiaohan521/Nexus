@@ -14,12 +14,6 @@ export type UserCell = {
     allowSubmit: 0 | 1
 }
 
-export const mockData: UserCell[] = [
-    { "id": 1, "username": "Milk", "role": 1, "allowSubmit": 1 },
-    { "id": 2, "username": "John", "role": 0, "allowSubmit": 0 },
-    { "id": 3, "username": "Jessica", "role": 0, "allowSubmit": 1 }
-]
-
 function AdminBadge() {
     return (
         <Badge className="bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
