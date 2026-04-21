@@ -168,7 +168,7 @@ export const createColumns = (getData: () => void): ColumnDef<UserCell>[] => [
                                     </AlertDialogMedia>
                                     <AlertDialogTitle>确认要删除用户 { row.getValue("username") } 吗？</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        这个操作无法撤销，将从服务器上彻底移除该用户。
+                                        这个操作无法撤销，将从服务器上彻底移除该用户，以及该用户所有的提交记录。
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
