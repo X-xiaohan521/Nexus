@@ -201,13 +201,14 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 > 📌 此处只列出最新版本，更早版本详见 `CHANGELOG.md`。
 
-### [1.0.2] - 2026-04-06
-
-### 🌟 优化
-- 
+### [1.0.2] - 2026-04-21
 
 ### 🛠 修复
+- 修复 `config.json` 中 isLeaderboardEnabled 字段不生效的问题。(issue #8)
+- 修复错误的默认 `groundTruth` 路径。
+- 修复后端消费评测结果时遗漏的幂等性处理。
 - 修复 `README.md` 中错误的版本号 和 `config.json` 字段。
+- 修复错误的 ICP 备案号。
 
 ---
 
