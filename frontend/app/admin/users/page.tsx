@@ -1,7 +1,7 @@
 "use client"
 
 import { apiFetch } from "@/lib/api";
-import { columns, UserCell } from "./columns";
+import { createColumns, UserCell } from "./columns";
 import { DataTable } from "./data-table";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -44,7 +44,7 @@ export default function() {
                     刷新
                 </Button>
             </div>
-            <DataTable columns={columns} data={data} />
+            <DataTable columns={createColumns(getData)} data={data} />
         </div>
     )
 }

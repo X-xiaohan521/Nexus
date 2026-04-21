@@ -53,7 +53,7 @@ function ProhibitSubmitBadge() {
     )
 }
 
-export const columns: ColumnDef<UserCell>[] = [
+export const createColumns = (getData: () => void): ColumnDef<UserCell>[] => [
     {
         accessorKey: "id",
         header: ({ column }) => {
@@ -119,6 +119,7 @@ export const columns: ColumnDef<UserCell>[] = [
                 }, false, true)
                 if (response.code === 1) {
                     toast.info(response.msg, {position: "top-center"});
+                    getData();
                 } else {
                     toast.error(response.msg, {position: "top-center"});
                 }
