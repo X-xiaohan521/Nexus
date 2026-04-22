@@ -4,7 +4,7 @@
 
 ## 📋 概览 Overview
 
-* **当前版本**：v1.1.0
+* **当前版本**：v1.1.1
 * **Web-UI 默认端口**：7842
 * **建议使用 Docker 部署**
 
@@ -65,7 +65,7 @@
 ```yml
 services:
   backend:
-    image: unimilk/nexus:backend-1.1.0
+    image: unimilk/nexus:backend-1.1.1
     ports:
       - "6780:6780"
     volumes:
@@ -80,7 +80,7 @@ services:
     depends_on:
       - rabbit-mq
   frontend:
-    image: unimilk/nexus:frontend-1.1.0
+    image: unimilk/nexus:frontend-1.1.1
     ports:
       - "7842:7842"
     environment:
@@ -89,7 +89,7 @@ services:
     depends_on:
       - backend
   evaluator:
-    image: unimilk/nexus:evaluator-1.1.0
+    image: unimilk/nexus:evaluator-1.1.1
     volumes:
       - /data/nexus:/app/data
     environment:
@@ -132,7 +132,7 @@ services:
     部署后端需要 JRE 21 环境 以及 maven，进入 `./backend` 目录，执行：
     ```bash
     mvn clean package
-    java -jar ./target/backend-1.1.0.jar
+    java -jar ./target/backend-1.1.1.jar
     ```
     即可在 `localhost:6780` 启动后端服务。
 
@@ -220,15 +220,10 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 > 📌 此处只列出最新版本，更早版本详见 `CHANGELOG.md`。
 
-### [1.1.0] - 2026-04-21
+### [1.1.1] - 2026-04-22
 
-### 🆕 新增
-- 新增管理员面板，方便调整系统设置、查询提交记录、管理用户状态。(issue #2)
-- 新增 `allowRegistration` 和 `defaultAllowSubmit` 设置项，加强对新用户注册和提交的控制。(issue #2)
-- 允许管理员删除用户及其提交记录。
-
-### 🌟 优化
-- 优化了 `/admin/submission` 页面的 Drawer 实例数量，提升前端响应速度。
+### 🛠 修复
+- 
 
 ---
 
