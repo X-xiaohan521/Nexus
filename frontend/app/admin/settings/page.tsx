@@ -127,7 +127,7 @@ export default function () {
         setSaving(false);
     }
 
-    if (!settings) {
+    if (!settings || groundTruth === undefined || defaultAllowSubmit === undefined) {
         return <SkeletonSettings />;
     }
 
@@ -198,7 +198,7 @@ export default function () {
                                     <SelectGroup>
                                         <SelectLabel>Ground Truth</SelectLabel>
                                         {settings.availableGroundTruths.map((item) => (
-                                            <SelectItem value={item}>{item}</SelectItem>
+                                            <SelectItem key={item} value={item}>{item}</SelectItem>
                                         ))}
                                     </SelectGroup>
                                 </SelectContent>
