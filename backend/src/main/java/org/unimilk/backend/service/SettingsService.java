@@ -1,6 +1,7 @@
 package org.unimilk.backend.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -55,12 +56,7 @@ public class SettingsService {
 
     public void updateSettings(ConfigDto newConfig) {
         Settings settings = settingsManager.getSettings();
-        Settings newSettings = new Settings();
-        newSettings.setGroundTruth((newConfig.groundTruth() != null) ? newConfig.groundTruth() : settings.getGroundTruth());
-        newSettings.setLeaderboardEnabled((newConfig.isLeaderboardEnabled() != null) ? newConfig.isLeaderboardEnabled() : settings.isLeaderboardEnabled());
-        newSettings.setLeaderboardRefreshRate((newConfig.leaderboardRefreshRate() != null) ? newConfig.leaderboardRefreshRate() : settings.getLeaderboardRefreshRate());
-        newSettings.setAllowRegistration((newConfig.allowRegistration() != null) ? newConfig.allowRegistration() : settings.isAllowRegistration());
-        newSettings.setDefaultAllowSubmit((newConfig.defaultAllowSubmit() != null) ? newConfig.defaultAllowSubmit() : settings.getDefaultAllowSubmit());
+        Settings newSettings = getNewSettings(newConfig, settings);
         boolean needRestartRefreshLeaderboardScheduler = !Objects.equals(
                 newSettings.getLeaderboardRefreshRate(),
                 settings.getLeaderboardRefreshRate()
@@ -69,6 +65,16 @@ public class SettingsService {
         if (needRestartRefreshLeaderboardScheduler) {
             refreshLeaderboardScheduler.restartTask();
         }
+    }
+
+    private static @NonNull Settings getNewSettings(ConfigDto newConfig, Settings settings) {
+        Settings newSettings = new Settings();
+        newSettings.setGroundTruth((newConfig.groundTruth() != null) ? newConfig.groundTruth() : settings.getGroundTruth());
+        newSettings.setLeaderboardEnabled((newConfig.isLeaderboardEnabled() != null) ? newConfig.isLeaderboardEnabled() : settings.isLeaderboardEnabled());
+        newSettings.setLeaderboardRefreshRate((newConfig.leaderboardRefreshRate() != null) ? newConfig.leaderboardRefreshRate() : settings.getLeaderboardRefreshRate());
+        newSettings.setAllowRegistration((newConfig.allowRegistration() != null) ? newConfig.allowRegistration() : settings.isAllowRegistration());
+        newSettings.setDefaultAllowSubmit((newConfig.defaultAllowSubmit() != null) ? newConfig.defaultAllowSubmit() : settings.getDefaultAllowSubmit());
+        return newSettings;
     }
 
     public List<String> getAvailableGroundTruths() {
