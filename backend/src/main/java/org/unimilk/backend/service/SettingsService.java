@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.unimilk.backend.dto.ConfigDto;
+import org.unimilk.backend.exception.BusinessException;
 import org.unimilk.backend.scheduler.RefreshLeaderboardScheduler;
 import org.unimilk.backend.settings.Settings;
 import org.unimilk.backend.settings.SettingsManager;
@@ -55,8 +56,14 @@ public class SettingsService {
     }
 
     public void updateSettings(ConfigDto newConfig) {
+        // 0. validate new config
+        validateConfig(newConfig);
+
+        // 1. generate newSettings via comparing newConfig and oldSettings for updated fields
         Settings settings = settingsManager.getSettings();
         Settings newSettings = getNewSettings(newConfig, settings);
+
+        // 2. judge whether to restart scheduler
         boolean needRestartRefreshLeaderboardScheduler = !Objects.equals(
                 newSettings.getLeaderboardRefreshRate(),
                 settings.getLeaderboardRefreshRate()
@@ -64,6 +71,19 @@ public class SettingsService {
         settingsManager.applyAndSaveSettingsFrom(newSettings);
         if (needRestartRefreshLeaderboardScheduler) {
             refreshLeaderboardScheduler.restartTask();
+        }
+    }
+
+    private void validateConfig(ConfigDto config) {
+        if (config.leaderboardRefreshRate() != null) {
+            if (!(config.leaderboardRefreshRate() > 0)) {
+                throw new BusinessException("刷新率必须为正整数。", "Failed to validate config: leaderboardRefreshRate must be a positive integer.");
+            } else if (!(config.leaderboardRefreshRate() < 604800)) {
+                throw new BusinessException("刷新率最低为 7 天。", "Failed to validate config: leaderboardRefreshRate cannot be lower than 7 days.");
+            }
+        }
+        if (!(config.defaultAllowSubmit() == null || Objects.equals(config.defaultAllowSubmit(), 0) || Objects.equals(config.defaultAllowSubmit(), 1))) {
+            throw new BusinessException("默认允许提交值只能为 0 或 1。", "Failed to validate config: defaultAllowSubmit can only be 0 or 1.");
         }
     }
 
