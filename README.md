@@ -226,7 +226,7 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 - 
 
 ### 🌟 优化
-- 
+- 在 `README.md` 中添加鸣谢。
 
 ---
 
@@ -234,6 +234,16 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 > 如果你需要帮助，或有部署、商业合作等需求，欢迎联系我。
 ### 📧 Email: unimilk891@gmail.com
 ### 🌐 GitHub: [X-xiaohan521](https://github.com/X-xiaohan521/)
+
+---
+
+## ❤️ 鸣谢
+
+### DHU AiLab
+感谢 **东华大学人工智能实验室** 的伙伴们在软件测试、部署方面提供的大力支持~
+
+### TheRedStone
+感谢 [TheRedStone](https://github.com/TechieBreeze) 提供的服务器压测脚本，以及极具启发性的并发限流策略。
 
 ---
 
