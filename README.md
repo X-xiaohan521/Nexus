@@ -4,7 +4,7 @@
 
 ## 📋 概览 Overview
 
-* **当前版本**：v1.1.1
+* **当前版本**：v1.1.2
 * **Web-UI 默认端口**：7842
 * **建议使用 Docker 部署**
 
@@ -65,7 +65,7 @@
 ```yml
 services:
   backend:
-    image: unimilk/nexus:backend-1.1.1
+    image: unimilk/nexus:backend-1.1.2
     ports:
       - "6780:6780"
     volumes:
@@ -80,7 +80,7 @@ services:
     depends_on:
       - rabbit-mq
   frontend:
-    image: unimilk/nexus:frontend-1.1.1
+    image: unimilk/nexus:frontend-1.1.2
     ports:
       - "7842:7842"
     environment:
@@ -89,7 +89,7 @@ services:
     depends_on:
       - backend
   evaluator:
-    image: unimilk/nexus:evaluator-1.1.1
+    image: unimilk/nexus:evaluator-1.1.2
     volumes:
       - /data/nexus:/app/data
     environment:
@@ -132,7 +132,7 @@ services:
     部署后端需要 JRE 21 环境 以及 maven，进入 `./backend` 目录，执行：
     ```bash
     mvn clean package
-    java -jar ./target/backend-1.1.1.jar
+    java -jar ./target/backend-1.1.2.jar
     ```
     即可在 `localhost:6780` 启动后端服务。
 
@@ -220,11 +220,13 @@ Nexus 使用 `config.json` 持久化服务端配置。字段解释如下：
 
 > 📌 此处只列出最新版本，更早版本详见 `CHANGELOG.md`。
 
-### [1.1.1] - 2026-04-22
+### [1.1.2] - 2026-05-04
 
 ### 🛠 修复
-- 修复了前端打开设置页面时，Ground Truth 设置 和 新用户默认权限 字段不能正常加载后端当前设置的问题。(issue #13)
-- 修复了后端没有对前端传来的配置项进行校验带来的安全隐患。(issue #13)
+- 
+
+### 🌟 优化
+- 
 
 ---
 
