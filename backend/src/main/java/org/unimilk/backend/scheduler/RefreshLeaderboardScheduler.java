@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
+import org.unimilk.backend.lock.TaskLock;
+import org.unimilk.backend.lock.TaskLockFactory;
 import org.unimilk.backend.service.LeaderboardService;
 import org.unimilk.backend.settings.SettingsManager;
 
@@ -18,14 +20,16 @@ public class RefreshLeaderboardScheduler {
     private final ThreadPoolTaskScheduler scheduler;
     private final SettingsManager settingsManager;
     private final LeaderboardService leaderboardService;
+    private final TaskLockFactory taskLockFactory;
 
     private ScheduledFuture<?> future;
 
     @Autowired
-    public RefreshLeaderboardScheduler(ThreadPoolTaskScheduler scheduler, SettingsManager settingsManager, LeaderboardService leaderboardService) {
+    public RefreshLeaderboardScheduler(ThreadPoolTaskScheduler scheduler, SettingsManager settingsManager, LeaderboardService leaderboardService, TaskLockFactory taskLockFactory) {
         this.scheduler = scheduler;
         this.settingsManager = settingsManager;
         this.leaderboardService = leaderboardService;
+        this.taskLockFactory = taskLockFactory;
     }
 
     @PostConstruct
@@ -34,8 +38,14 @@ public class RefreshLeaderboardScheduler {
         Integer leaderboardRefreshRate = settingsManager.getSettings().getLeaderboardRefreshRate();
         log.info("Starting scheduled task: refresh leaderboard every {} s.", leaderboardRefreshRate);
         future = scheduler.scheduleAtFixedRate(() -> {
-            log.info("Running scheduled task: refreshing the leaderboard...");
-            leaderboardService.calculateLeaderboard();
+            try (TaskLock lock = taskLockFactory.tryAcquire("heavy-task")) {
+                if (lock == null) {
+                    log.info("Lock is occupied, skip calculating the leaderboard.");
+                    return;
+                }
+                log.info("Running scheduled task: refreshing the leaderboard...");
+                leaderboardService.calculateLeaderboard();
+            }
         }, Duration.ofSeconds(leaderboardRefreshRate));
     }
 
