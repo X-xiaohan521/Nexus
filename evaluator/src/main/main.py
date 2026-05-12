@@ -1,4 +1,5 @@
 import sys
+import time
 from pathlib import Path
 
 from config import NEXUS_DATA
@@ -9,14 +10,29 @@ from provider import *
 
 from loguru import logger
 
+from filelock import FileLock, Timeout
+
+
 def callback(ch, method, properties, body):
     request = body.decode()
     logger.info(f"Received evaluate request {request}")
-    result = evaluate(request)
-    logger.info(f"Finished evaluating, sending back results {result}")
-    send_eval_result(result)
-    logger.info("Results sent, waiting for new requests")
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+    # get lock file
+    lock = FileLock(Path(NEXUS_DATA) / "heavy-task.lock")
+    while True:
+        try:
+            # wait until the lock is successfully acquired
+            with lock.acquire(timeout=0):
+                # once got lock, proceed on evaluating
+                result = evaluate(request)
+                logger.info(f"Finished evaluating, sending back results {result}")
+                send_eval_result(result)
+                logger.info("Results sent, waiting for new requests")
+                ch.basic_ack(delivery_tag=method.delivery_tag)
+                break
+            # lock will auto-release once out of the 'with' scope
+        except Timeout:
+            logger.info("Lock is occupied, wait 5 seconds before retrying...")
+            time.sleep(5)
 
 def main():
     base = Path(NEXUS_DATA)
