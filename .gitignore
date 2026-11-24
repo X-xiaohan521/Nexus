@@ -4,3 +4,4 @@
 __pycache__
 /evaluate_xc/
 /deployment/
+.settings
